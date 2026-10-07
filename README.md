@@ -1,13 +1,13 @@
 <div align="center">
 
-# Blubirch Delivery Verification System
+# Delivery Verification System
 
-**Verify inbound deliveries against the expected box list — in the browser, on the device, with no backend.**
+**Reconcile inbound deliveries in minutes: read the driver's printed box list with a camera and check it against what you ordered.**
 
 [![Live](https://img.shields.io/badge/app-live-2ea44f?style=flat-square)](https://atharvguitarist.github.io/delivery-verification/)
 [![Status](https://img.shields.io/badge/status-production-blue?style=flat-square)](#)
-[![Platform](https://img.shields.io/badge/platform-web%20%7C%20mobile-lightgrey?style=flat-square)](#browser-support)
-[![Data](https://img.shields.io/badge/data-on--device%20only-success?style=flat-square)](#data-handling--privacy)
+[![OCR](https://img.shields.io/badge/OCR-on--device-8957e5?style=flat-square)](#recognition-pipeline)
+[![Privacy](https://img.shields.io/badge/data-never%20leaves%20the%20device-success?style=flat-square)](#data-handling--privacy)
 [![License](https://img.shields.io/badge/license-proprietary-red?style=flat-square)](#license)
 
 [**Open the app →**](https://atharvguitarist.github.io/delivery-verification/)
@@ -16,44 +16,81 @@
 
 ---
 
-## Overview
+## The problem
 
-The Delivery Verification System lets receiving staff reconcile what a driver *says* was delivered with what the warehouse *expected* to receive.
+When a truck arrives, the receiving team has two lists: the **expected list** (what was ordered, usually an Excel export) and the **driver's printed list** (what the carrier says is on board). Checking one against the other by hand is slow, error-prone and hard to audit. One misread digit in a long box number means a missing box goes unnoticed.
 
-The operator uploads the expected delivery list (Excel/CSV), photographs the driver's printed box list, and the app reads the box numbers on-device using OCR, compares both lists, and produces a clear **arrived / not arrived / unexpected** result that can be exported as Excel or PDF.
+## What it does
 
-It is a single static web application: **no server, no database, no accounts and no paid services.** All processing happens inside the user's browser.
+The Delivery Verification System turns that check into a three-step workflow:
 
-## Key features
+1. **Load the expected list.** Upload the Excel or CSV file and pick the column with the box numbers.
+2. **Photograph the driver's list.** Take one photo per page with a phone or upload images.
+3. **Get the result.** Every box is marked **arrived**, **not arrived** or **unexpected**, and the result can be exported as an Excel or PDF report.
 
-| Capability | Details |
+Everything runs on the device in the browser. Delivery documents and photos are never sent to any server.
+
+## Key capabilities
+
+| | |
 |---|---|
-| **Expected list import** | Excel (`.xlsx`/`.xls`) or CSV, one box number per row. Column auto-detection with manual override, and warnings when box numbers have been stored as rounded numeric values. |
-| **On-device OCR** | Photographs of the driver's printed list are read locally with Tesseract (WebAssembly, LSTM model bundled). Line detection, strip-level reading and fuzzy matching (edit distance, nearest-match) to tolerate print and camera noise. |
-| **Reconciliation** | Side-by-side comparison of expected vs. received box numbers with per-item status and diff highlighting. |
-| **Scan-first workflow** | Scanning can start before the expected list is available; the comparison runs as soon as the list is uploaded. |
-| **Reports** | Export the result as **Excel** or **PDF**, copy the not-arrived list, or copy the driver's list as a soft copy. |
-| **Recent scans** | Sessions are saved on the device (IndexedDB) and can be reopened later. |
-| **Responsive UI** | Works on warehouse handsets and laptops, with light and dark themes. |
+| **Format-aware OCR** | Learns the structure of your box numbers from the expected list and uses it to correct common camera and print misreads. |
+| **Tolerant matching** | Fuzzy matching resolves near-misses to the right box and flags anything it cannot confirm for review, so nothing is matched silently. |
+| **Smart Excel import** | Detects the box-number column automatically and warns when a spreadsheet has turned long codes into rounded numbers. |
+| **Scan first, compare later** | Start scanning before the expected list is available; the comparison runs as soon as it is uploaded. |
+| **Audit-ready output** | Excel and PDF reports, a one-tap copy of the not-arrived list, and a clean soft copy of the driver's list. |
+| **Session history** | Recent verifications are stored on the device and can be reopened later. |
+| **Built for the dock** | Responsive layout for warehouse handsets and laptops, with light and dark themes. |
 
-## How it works
+## Recognition pipeline
 
+General-purpose OCR is not reliable enough for long alphanumeric codes on thermal printouts photographed under warehouse lighting. The app uses a dedicated pipeline built around that problem:
+
+```mermaid
+flowchart LR
+    A[Photo of driver's list] --> B[Image preparation]
+    B --> C[Line detection]
+    C --> D[Strip-level OCR<br/>Tesseract LSTM, WASM]
+    D --> E[Format correction]
+    E --> F[Fuzzy matching]
+    X[Expected list<br/>Excel / CSV] --> P[Format profile]
+    P --> E
+    P --> F
+    F --> R[Reconciliation report]
 ```
- Expected list (Excel/CSV) ──┐
-                             ├──►  Normalise & match  ──►  Result  ──►  Excel / PDF / clipboard
- Driver's list (photos) ─OCR─┘     (fuzzy, on-device)      arrived · not arrived · unexpected
-```
 
-1. **Upload the expected list** — choose the column that holds the box numbers.
-2. **Photograph the driver's list** — one photo per page, flat and well lit.
-3. **Review the result** — confirm any low-confidence reads, then export or copy the outcome.
+- **Image preparation.** Photos are resized, converted to luminance and processed block by block to compensate for uneven lighting and shadows.
+- **Line detection and strip OCR.** The page is split into individual text lines, and each strip is read separately by a multi-worker Tesseract LSTM engine running in WebAssembly. This is noticeably more accurate than reading a whole page at once.
+- **Format profiling.** The expected list is analysed to learn which character positions are digits and which are letters for every code length.
+- **Format correction.** OCR output is reshaped against that profile, so classic confusions (`O`/`Q`/`D`↔`0`, `I`/`L`↔`1`, `S`↔`5`, `B`↔`8`, `Z`↔`2`, `G`↔`6`) are fixed using the position's expected type.
+- **Fuzzy matching.** The remaining tokens are matched to the expected list by edit distance. Ambiguous candidates are surfaced for the operator to confirm instead of being accepted automatically.
+
+## Architecture
+
+The system follows a **client-side, edge-first architecture**: recognition, matching, storage and report generation all run on the operator's device.
+
+| Layer | Technology |
+|---|---|
+| Interface | HTML5, CSS, vanilla JavaScript (single-page app) |
+| OCR engine | Tesseract.js, LSTM model, WebAssembly with SIMD builds, bundled locally |
+| Spreadsheet I/O | SheetJS |
+| PDF reports | jsPDF + AutoTable |
+| Persistence | IndexedDB (on-device) |
+| Hosting | GitHub Pages over HTTPS |
+
+Why this design:
+
+- **Privacy by design.** Manifests and photos stay on the device.
+- **Works at the dock.** After the first load, nothing depends on network round-trips.
+- **Zero operating cost and nothing to maintain.** There are no servers to patch, scale or secure.
+- **Instant rollout.** Any handset with a modern browser is ready to use; nothing to install.
 
 ## Data handling & privacy
 
-- **Nothing is uploaded.** Excel files and photos are processed entirely in the browser.
-- **Local storage only.** Recent scans live in the browser's IndexedDB on the device that created them. They are not synced between devices and are lost if the browser's site data is cleared — **download the Excel report for anything that must be retained.**
-- **Third-party requests** are limited to static assets: Google Fonts and the SheetJS Excel library (cdnjs). The first visit therefore requires an internet connection.
-- No analytics, tracking or cookies are used by the application.
+- **Local processing.** Excel files and photos are processed entirely in the browser.
+- **Local storage.** Recent verifications are kept in IndexedDB on the device that created them. They are not synced between devices and are removed if the browser's site data is cleared, so **export the report for anything that must be retained.**
+- **Network use** is limited to loading static assets (web fonts and the spreadsheet library) on first visit.
+- **No analytics, tracking or cookies.**
 
 ## Browser support
 
@@ -62,50 +99,44 @@ It is a single static web application: **no server, no database, no accounts and
 | Chrome / Edge (desktop & Android) | ✅ Recommended |
 | Safari (macOS & iOS) | ✅ Supported |
 | Firefox | ⚠️ Works; not the primary target |
-| In-app / embedded web views | ❌ OCR engine may fail to start — open in Chrome or Safari |
-
-A modern browser with WebAssembly support is required.
+| In-app / embedded web views | ❌ The OCR engine may not start. Open the link in Chrome or Safari |
 
 ## Project structure
 
 ```
 .
-├── index.html     # The complete application (UI, logic, styles)
-├── tess/          # Tesseract OCR engine (WASM builds) and English LSTM model
+├── index.html     # Application: UI, recognition pipeline, matching and reporting
+├── tess/          # Tesseract OCR engine (WASM/SIMD builds) and English LSTM model
 ├── lib/           # jsPDF + AutoTable for PDF report generation
+├── .github/       # Repository ownership (CODEOWNERS)
 └── .nojekyll      # Serve files as-is on GitHub Pages
 ```
 
 ## Deployment
 
-The app is deployed with **GitHub Pages** from the `main` branch, root folder.
+The app is published with **GitHub Pages** from the `main` branch (root folder) at
+**https://atharvguitarist.github.io/delivery-verification/**. Changes merged into `main` go live within about a minute.
 
-| Setting | Value |
-|---|---|
-| Source | Deploy from a branch |
-| Branch | `main` / `(root)` |
-| URL | https://atharvguitarist.github.io/delivery-verification/ |
-
-Every change merged into `main` is published automatically within about a minute. To run locally, serve the folder with any static file server (opening `index.html` directly from disk will not load the OCR worker):
+To run it locally, serve the folder with any static web server. Opening `index.html` directly from disk will not start the OCR workers.
 
 ```bash
 python3 -m http.server 8080
-# then open http://localhost:8080
+# open http://localhost:8080
 ```
 
 ## Change control
 
 `main` is the production branch and is **protected**:
 
-- Direct pushes, force pushes and branch deletion are blocked.
-- All changes go through a pull request and require approval from the repository owner.
-- Ownership of every file is assigned to the maintainer via `CODEOWNERS`.
+- Force pushes and branch deletion are blocked.
+- Changes are merged through reviewed pull requests with a linear history.
+- Every file is owned by the maintainer via `CODEOWNERS`, and their approval is required to merge.
 
-External contributions are not accepted. Please do not open pull requests unless you have been asked to.
+External contributions are not accepted.
 
 ## Security
 
-Please **do not** report security issues through public GitHub issues. See [SECURITY.md](SECURITY.md) for how to report a vulnerability privately.
+Please **do not** report security issues in public GitHub issues. See [SECURITY.md](SECURITY.md) for how to report a vulnerability privately.
 
 ## License
 
