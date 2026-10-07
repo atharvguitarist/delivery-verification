@@ -16,4 +16,4 @@ Include a description of the issue, steps to reproduce and the potential impact.
 
 ## Scope
 
-The application is a static, client-side web app. It has no backend and stores data only in the user's own browser. Reports about the GitHub Pages hosting platform itself should be sent to GitHub.
+The application performs all processing on the user's device and stores data only in the user's own browser. Reports about the GitHub Pages hosting platform itself should be sent to GitHub.
