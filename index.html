@@ -90,7 +90,8 @@ svg { flex: none; }
 .page { max-width: 1280px; margin: 0 auto; padding-inline: var(--gutter); padding-block: clamp(24px, 3.2vw, 40px) 64px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-items: stretch; }
 .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .span { grid-column: 1 / -1; }
-@media (min-width: 900px) { .page { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; } .page > .card { height: 100%; } }
+@media (min-width: 760px) { .page { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 24px; } .page > .card { height: 100%; } .step3 { grid-column: 1 / -1; } .step3 .drop { min-height: 230px; } }
+@media (min-width: 1080px) { .page { grid-template-columns: repeat(3, minmax(0, 1fr)); } .step3 { grid-column: auto; } .step3 .drop { min-height: 316px; } }
 .intro { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
 .intro h1 { font-size: 24px; font-weight: 600; letter-spacing: -.015em; line-height: 1.25; }
 .muted { color: var(--muted); }
@@ -172,7 +173,7 @@ svg { flex: none; }
 .stat .num { font-family: var(--f-head); font-size: 30px; font-weight: 600; line-height: 1.2; letter-spacing: -.02em; font-variant-numeric: tabular-nums; margin-top: 4px; }
 .stat .of { font-size: 13px; color: var(--muted); }
 .dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
-.dot.ok { background: var(--brand-green); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); }
+.dot.ok { background: var(--brand-green); } .dot.bad { background: var(--bad); } .dot.warn { background: var(--warn); } .dot.mut { background: var(--border-strong); }
 @media (max-width: 480px) { .tab { padding: 10px 8px; } .tab .ct { display: none; } .tabs { gap: 8px; } .strip img { height: 36px; } .stats { grid-template-columns: 1fr; } .stat + .stat { border-left: 0; border-top: 1px solid var(--border); } .stat { padding: 12px 16px; display: grid; grid-template-columns: 1fr auto; align-items: center; column-gap: 12px; } .stat .num { grid-row: 1 / 3; grid-column: 2; margin: 0; font-size: 26px; } .stat .of { grid-column: 1; } }
 
 .review { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
@@ -220,10 +221,127 @@ body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: col
 .typed .input { flex: 1; min-width: 0; }
 .modal .choices .btn.primary { color: var(--accent-ink); }
 
-.toast { position: fixed; left: 20px; right: 20px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); margin: 0 auto; max-width: 460px; background: var(--text); color: var(--bg); border-radius: 8px; padding: 12px 16px; font-size: 14px; z-index: 9; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
-.modal { position: fixed; inset: 0; background: rgba(10, 14, 20, .5); z-index: 10; display: grid; place-items: center; padding: 20px; }
+.toast { z-index: 60 !important; position: fixed; left: 20px; right: 20px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); margin: 0 auto; max-width: 460px; background: var(--text); color: var(--bg); border-radius: 8px; padding: 12px 16px; font-size: 14px; z-index: 9; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, .18); }
+.modal { position: fixed; inset: 0; background: rgba(10, 14, 20, .5); z-index: 50; display: grid; place-items: center; padding: 20px; }
 .modal .card { width: 100%; max-width: 420px; max-height: calc(100% - 20px); overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
 .modal h2 { font-size: 17px; font-weight: 600; }
+
+/* step 3 and report */
+.ustat { display: flex; align-items: center; gap: 16px; padding: 16px 18px; background: var(--subtle); border-radius: var(--r); }
+.ubig { font: 600 40px/1 var(--f-head); letter-spacing: -.02em; font-variant-numeric: tabular-nums; color: var(--accent); }
+.ustat .pn { font-weight: 600; }
+.uprog { display: flex; flex-direction: column; gap: 6px; }
+.uprog .meter { height: 8px; border-radius: 4px; margin: 0; }
+.uprog .meter i { background: var(--brand-green); }
+.srcs { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 13.5px; color: var(--muted); }
+.srcs span::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+.srcs b { color: var(--text); font-weight: 600; }
+.srcs .off::before { background: var(--border-strong); }
+.stat.pick { all: unset; box-sizing: border-box; cursor: pointer; padding: 16px 18px; min-width: 0; border-bottom: 3px solid transparent; }
+.stat.pick + .stat.pick { border-left: 1px solid var(--border); }
+.stat.pick:hover { background: var(--accent-soft); }
+.stat.pick[aria-pressed="true"] { border-bottom-color: var(--accent); background: var(--surface); }
+.stat.pick:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.bd { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.bdr { all: unset; box-sizing: border-box; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
+.bdr:hover { border-color: var(--accent); }
+.bdr.on { border-color: var(--accent); background: var(--accent-soft); box-shadow: inset 0 0 0 1px var(--accent); }
+.bdr.zero { opacity: .55; }
+.bdr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.bdl { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.bdl b { font-size: 14px; font-weight: 600; }
+.bdl span { font-size: 12.5px; color: var(--muted); line-height: 1.35; }
+.bdn { font: 600 22px/1 var(--f-head); font-variant-numeric: tabular-nums; }
+.listhead { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 16px; justify-content: space-between; }
+.listhead > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.listhead b { font: 600 15px var(--f-head); }
+.listhead .input { max-width: 300px; }
+@media (max-width: 620px) { .listhead .input { max-width: none; } }
+.mks { display: inline-flex; flex: none; }
+.mks > span { width: 72px; text-align: center; display: inline-flex; justify-content: center; }
+.mks .y { color: var(--ok); } .mks .n { color: var(--border-strong); }
+@media (max-width: 480px) { .mks > span { width: 54px; font-size: 11px; } }
+.umatch { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; justify-content: space-between; padding: 12px 16px; background: var(--ok-bg); color: var(--ok); font-size: 14px; border-top: 1px solid var(--border); }
+.umatch b { font-weight: 600; }
+.bandlink { align-self: flex-start; margin-top: 2px; font-size: 14.5px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.modal .card.help-modal { max-width: 720px; gap: 14px; }
+.help { display: flex; flex-direction: column; gap: 12px; font-size: 14.5px; line-height: 1.55; }
+.help h2 { font-size: 20px; }
+.help h3 { font: 600 15.5px var(--f-head); margin-top: 10px; }
+.help p { margin: 0; }
+.help i { font-style: normal; font-weight: 600; color: var(--accent); }
+.hsteps { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.hstep { display: flex; gap: 14px; padding: 14px 16px; background: var(--subtle); border-radius: var(--r); }
+.hstep > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.hstep b { font: 600 15px var(--f-head); }
+.hnum { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font: 600 13px var(--f-head); flex: none; }
+.hbul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+.hbul b { font: inherit; font-weight: 600; }
+.hcolors { display: flex; flex-direction: column; gap: 6px; font-size: 13.5px; color: var(--muted); }
+.hcolors > span { display: flex; align-items: center; gap: 10px; }
+.hcolors .chip { width: 64px; justify-content: center; flex: none; }
+.hgroups { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: var(--r); }
+.hgroups li { display: grid; grid-template-columns: 8px minmax(150px, 220px) 1fr; gap: 12px; align-items: center; padding: 10px 14px; }
+.hgroups li + li { border-top: 1px solid var(--border); }
+.hgroups b { font-weight: 600; font-size: 14px; }
+.hgroups span { color: var(--muted); font-size: 13.5px; }
+@media (max-width: 560px) { .hgroups li { grid-template-columns: 8px 1fr; } .hgroups span { grid-column: 2; } .hstep { padding: 12px; gap: 10px; } }
+
+.repicon { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); flex: none; }
+.chip.opt { height: 22px; font-size: 11.5px; letter-spacing: .02em; }
+.notice.interim { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.notice.interim span { flex: 1 1 320px; }
+
+.morechk { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: center; }
+
+/* unloading scan screen */
+body.noscroll { overflow: hidden; }
+.scanner { position: fixed; inset: 0; z-index: 30; background: var(--bg); display: flex; flex-direction: column; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sc-bar { display: flex; align-items: center; gap: 12px; padding: 12px var(--gutter); background: var(--surface); border-bottom: 1px solid var(--border); }
+.sc-title { display: flex; flex-direction: column; line-height: 1.3; }
+.sc-title b { font: 600 17px var(--f-head); }
+.sc-title span { font-size: 13px; color: var(--muted); }
+.sc-bar .btn { margin-left: auto; min-width: 88px; }
+.sc-body { flex: 1; min-height: 0; overflow: auto; width: 100%; max-width: 1280px; margin: 0 auto; padding: 20px var(--gutter) 28px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; align-content: start; }
+@media (min-width: 900px) { .sc-body { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); overflow: hidden; align-content: stretch; } .sc-main { overflow: auto; } .sc-side { min-height: 0; display: flex; flex-direction: column; } .sc-list { overflow: auto; flex: 1; } }
+.sc-main { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.sc-fb { border-radius: var(--r); padding: 20px 22px; background: var(--subtle); display: flex; flex-direction: column; gap: 6px; min-height: 138px; justify-content: center; border: 1px solid var(--border); }
+.sc-fb .fb-l { font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.sc-fb .fb-c { font: 600 clamp(22px, 4.2vw, 34px)/1.15 var(--f-code); overflow-wrap: anywhere; }
+.sc-fb .fb-h { font-size: 14px; color: var(--muted); }
+.sc-fb.ok { background: var(--ok-bg); border-color: transparent; } .sc-fb.ok .fb-l, .sc-fb.ok .fb-c { color: var(--ok); }
+.sc-fb.warn { background: var(--warn-bg); border-color: transparent; } .sc-fb.warn .fb-l, .sc-fb.warn .fb-c { color: var(--warn); }
+.sc-fb.bad { background: var(--bad-bg); border-color: transparent; } .sc-fb.bad .fb-l, .sc-fb.bad .fb-c { color: var(--bad); }
+.sc-fb.flash { animation: fb .35s ease-out; }
+@keyframes fb { from { transform: scale(.985); filter: brightness(1.08); } to { transform: none; filter: none; } }
+.sc-in { display: flex; gap: 10px; }
+.bcin { flex: 1; min-width: 0; height: 54px; border: 2px solid var(--accent); border-radius: 10px; padding: 0 16px; background: var(--surface); font: 500 19px var(--f-code); letter-spacing: .02em; }
+.bcin:focus { outline: none; box-shadow: 0 0 0 4px var(--accent-soft); }
+.sc-in .btn { height: 54px; padding: 0 22px; }
+.sc-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.sc-tools .btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.sc-cam { position: relative; border-radius: var(--r); overflow: hidden; background: #000; aspect-ratio: 4 / 3; max-height: 48vh; }
+.sc-cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sc-frame { position: absolute; left: 8%; right: 8%; top: 28%; bottom: 28%; border: 2px solid rgba(255, 255, 255, .9); border-radius: 12px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .28); }
+.sc-camstat { position: absolute; left: 12px; right: 12px; top: 12px; text-align: center; color: #fff; font-size: 13.5px; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, .7); }
+.sc-cam .btn { position: absolute; right: 12px; bottom: 12px; }
+.sc-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: var(--r); overflow: hidden; background: var(--subtle); }
+.sc-stats .stat { padding: 14px 16px; }
+.sc-stats .num { font-size: 26px; }
+.sc-stats .meter { margin-top: 8px; height: 6px; } .sc-stats .meter i { background: var(--brand-green); }
+@media (max-width: 480px) { .sc-stats { grid-template-columns: 1fr; } .sc-stats .stat + .stat { border-left: 0; border-top: 1px solid var(--border); } .sc-in .btn { padding: 0 16px; } }
+.sc-side { border: 1px solid var(--border); border-radius: var(--r); background: var(--surface); min-width: 0; }
+.sc-listhead { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+.sc-listhead b { font: 600 15px var(--f-head); }
+.sc-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px 9px 16px; }
+.sc-row + .sc-row { border-top: 1px solid var(--border); }
+.sc-row .code { flex: 1; min-width: 0; font-size: 14px; overflow-wrap: anywhere; }
+.sc-row time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.xbtn { all: unset; cursor: pointer; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); flex: none; }
+.xbtn:hover { background: var(--subtle); color: var(--bad); }
+.xbtn:focus-visible { outline: 2px solid var(--accent); }
+@media (max-width: 480px) { .sc-row time { display: none; } }
+@media (prefers-reduced-motion: reduce) { .sc-fb.flash { animation: none; } }
 @media (prefers-reduced-motion: reduce) { .spin { animation-duration: 3s; } .meter i, .btn { transition: none; } }
 </style>
 
@@ -231,15 +349,18 @@ body { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: col
   <div class="brand"><svg class="logo" viewBox="0 0 347.25 58.38" role="img" aria-label="Blubirch"><path fill="#10b04b" fill-rule="evenodd" d="M1.77 57.62C1.20 57.56 1.03 57.48 0.68 57.10C0.03 56.39 0.00 56.12 0.00 50.94L0.00 46.19L0.36 45.56C0.96 44.52 0.48 44.59 6.72 44.61C12.95 44.62 12.46 44.54 12.78 45.49C13.04 46.28 13.07 54.83 12.81 56.09C12.46 57.76 12.89 57.64 7.23 57.66C4.60 57.68 2.14 57.66 1.77 57.62ZM23.68 57.19C22.61 56.43 22.70 57.24 22.62 46.56C22.57 37.99 22.54 37.03 22.35 36.69C22.06 36.17 21.01 35.17 20.59 35.01C20.35 34.92 17.14 34.88 10.86 34.88C4.43 34.88 1.40 34.83 1.23 34.74C1.10 34.67 0.76 34.26 0.48 33.83C-0.02 33.06 -0.02 33.06 0.04 32.06C0.07 31.51 0.24 30.25 0.42 29.25C0.59 28.25 0.78 26.90 0.84 26.24C0.93 25.26 1.03 24.89 1.37 24.24C1.93 23.13 2.08 23.01 3.20 22.74C4.78 22.37 31.87 22.37 33.18 22.75C34.26 23.06 34.54 23.33 34.90 24.36L35.18 25.19L35.18 39.50L35.19 53.81L34.88 54.69C34.57 55.55 34.56 55.57 33.75 55.96C32.51 56.58 31.84 56.74 30.00 56.87C28.99 56.94 27.79 57.11 27.00 57.30C25.13 57.76 24.45 57.74 23.68 57.19ZM45.56 46.21C45.08 45.72 44.89 45.42 44.83 45.05C44.79 44.78 44.75 37.74 44.75 29.40C44.75 13.04 44.78 13.91 44.11 13.30C43.40 12.67 44.00 12.69 27.75 12.66C19.40 12.64 12.45 12.60 12.30 12.57C11.96 12.49 11.10 11.80 10.91 11.46C10.83 11.31 10.76 10.77 10.75 10.25C10.75 9.07 10.96 8.62 11.88 7.91C12.25 7.61 12.86 7.13 13.23 6.84C13.60 6.55 14.11 6.18 14.36 6.01C14.61 5.85 15.04 5.56 15.31 5.37C15.59 5.19 15.94 4.99 16.09 4.95C16.24 4.90 16.64 4.68 16.97 4.45C17.29 4.23 17.76 3.98 18.00 3.89C18.24 3.81 18.63 3.60 18.88 3.44C19.12 3.27 19.62 3.03 20.00 2.90C20.38 2.77 20.90 2.51 21.16 2.34C21.43 2.16 21.90 1.98 22.23 1.94C22.55 1.90 23.41 1.67 24.13 1.44C24.86 1.20 25.90 0.96 26.45 0.89C26.99 0.82 27.77 0.63 28.19 0.47L28.94 0.19L41.33 0.12C48.15 0.09 54.02 0.08 54.37 0.11C55.36 0.17 56.44 0.95 56.94 1.94L57.31 2.69L57.35 14.67L57.38 26.66L57.08 27.92C56.91 28.62 56.74 29.80 56.70 30.56C56.63 31.75 56.57 32.04 56.24 32.73C56.03 33.17 55.80 33.90 55.73 34.36C55.65 34.85 55.45 35.45 55.24 35.83C55.04 36.18 54.82 36.77 54.75 37.13C54.68 37.50 54.46 38.05 54.25 38.37C54.05 38.69 53.80 39.17 53.71 39.44C53.61 39.72 53.36 40.22 53.14 40.56C52.93 40.90 52.75 41.24 52.75 41.32C52.75 41.72 50.26 45.01 49.12 46.11C48.42 46.79 48.20 46.88 47.09 46.88L46.20 46.88L45.56 46.21Z"/><path class="logo-ink" fill-rule="evenodd" d="M89.88 58.24C89.63 58.18 88.96 58.02 88.38 57.89C87.19 57.63 85.42 56.90 84.75 56.39C84.51 56.21 84.08 55.90 83.78 55.70C83.49 55.51 82.84 54.93 82.33 54.42C80.87 52.96 80.60 53.13 80.50 55.53C80.41 57.83 80.90 57.62 75.35 57.62L70.86 57.62L70.49 57.26L70.12 56.89L70.12 29.03L70.12 1.16L70.45 0.84C70.90 0.38 71.24 0.35 76.25 0.40C81.01 0.44 81.07 0.45 81.37 1.09C81.46 1.29 81.50 4.80 81.50 12.29C81.50 21.96 81.52 23.23 81.69 23.47C81.96 23.85 82.32 23.82 82.73 23.40C83.29 22.82 84.15 22.18 84.87 21.82C85.24 21.63 85.69 21.37 85.87 21.24C86.04 21.12 86.64 20.92 87.19 20.80C87.74 20.68 88.50 20.48 88.88 20.35C89.73 20.06 92.56 19.83 94.44 19.91C95.59 19.95 95.97 20.02 96.81 20.35C97.36 20.56 98.20 20.82 98.67 20.93C99.55 21.13 100.71 21.71 101.81 22.49C102.96 23.32 105.32 25.79 106.09 26.99C107.39 29.01 107.55 29.29 107.76 29.93C107.88 30.28 108.12 30.82 108.29 31.13C108.47 31.44 108.68 32.00 108.76 32.38C108.83 32.75 109.06 33.59 109.27 34.24C110.00 36.58 109.99 42.35 109.25 44.67C109.04 45.31 108.82 46.14 108.75 46.51C108.68 46.88 108.43 47.55 108.20 48.00C107.97 48.44 107.74 48.95 107.69 49.12C107.35 50.25 104.69 53.54 103.25 54.61C103.01 54.78 102.62 55.09 102.38 55.29C102.15 55.49 101.76 55.74 101.53 55.84C101.29 55.93 100.82 56.21 100.47 56.44C100.13 56.68 99.79 56.88 99.73 56.88C99.66 56.88 99.17 57.05 98.65 57.26C96.59 58.09 91.42 58.67 89.88 58.24ZM147.31 58.28C143.76 57.77 142.14 57.04 140.25 55.13C138.78 53.65 138.20 52.76 137.54 51.00C136.92 49.36 136.91 49.33 136.54 46.61L136.21 44.19L136.16 33.01C136.13 26.87 136.14 21.71 136.18 21.54C136.34 20.92 136.71 20.87 141.71 20.88C146.45 20.88 147.14 20.94 147.37 21.37C147.46 21.53 147.50 25.07 147.51 31.46C147.51 43.03 147.56 43.77 148.32 45.31C149.71 48.10 151.28 48.77 154.88 48.12C157.23 47.70 158.15 47.07 159.06 45.25C160.02 43.35 160.14 41.67 160.12 30.14C160.11 21.48 160.11 21.46 160.37 21.20C160.78 20.79 170.72 20.79 171.13 21.20L171.39 21.45L171.38 39.10C171.37 51.57 171.33 56.84 171.23 57.05C170.99 57.59 170.74 57.62 165.85 57.63C160.17 57.64 160.72 57.87 160.63 55.40C160.54 53.00 160.45 52.93 159.16 54.22C156.89 56.47 155.18 57.55 153.38 57.88C152.93 57.96 152.26 58.10 151.88 58.20C151.23 58.37 148.26 58.42 147.31 58.28ZM199.94 58.20C199.59 58.10 198.95 57.95 198.50 57.87C198.05 57.78 197.30 57.52 196.82 57.29C196.34 57.06 195.88 56.88 195.79 56.88C195.71 56.88 195.40 56.69 195.10 56.47C194.81 56.24 194.42 55.97 194.25 55.86C194.08 55.75 193.36 55.12 192.67 54.45C190.88 52.75 190.84 52.77 190.75 55.34C190.65 57.89 191.17 57.66 185.68 57.63C181.01 57.61 180.83 57.59 180.62 57.05C180.55 56.86 180.50 45.94 180.50 28.98C180.49 -1.47 180.44 0.79 181.20 0.49C181.38 0.43 183.54 0.37 186.25 0.37L190.99 0.37L191.34 0.68L191.69 0.98L191.75 12.28C191.82 25.26 191.75 24.62 192.92 23.47C193.69 22.71 194.42 22.15 194.97 21.90C195.23 21.78 195.69 21.53 196.00 21.35C196.31 21.16 197.01 20.90 197.56 20.77C198.11 20.64 199.01 20.40 199.56 20.25C200.43 20.02 200.92 19.98 203.31 19.96L206.06 19.94L206.93 20.30C207.40 20.50 208.25 20.76 208.80 20.88C210.78 21.32 214.19 23.90 215.79 26.17C216.72 27.48 217.38 28.55 217.63 29.12C217.77 29.43 218.02 29.96 218.19 30.29C219.59 32.95 220.29 37.46 219.94 41.50C219.70 44.18 219.68 44.31 219.16 46.00C218.13 49.38 216.32 52.20 213.86 54.28C212.56 55.38 212.16 55.67 211.75 55.84C211.51 55.94 211.14 56.16 210.92 56.32C210.23 56.84 207.79 57.71 206.19 58.01C204.29 58.36 200.89 58.46 199.94 58.20ZM293.31 58.23C290.85 58.06 289.19 57.77 287.62 57.24C286.81 56.97 286.08 56.75 286.00 56.75C285.92 56.75 285.53 56.56 285.14 56.33C284.76 56.10 284.18 55.76 283.88 55.57C282.01 54.47 281.25 53.87 279.69 52.30C278.51 51.11 277.13 49.21 276.75 48.25C276.66 48.01 276.45 47.58 276.28 47.29C276.12 47.00 275.86 46.30 275.70 45.73C275.54 45.16 275.28 44.36 275.13 43.95C274.74 42.89 274.55 39.43 274.73 36.83C274.94 33.99 275.79 31.58 277.67 28.55C278.76 26.77 279.68 25.79 281.63 24.31C281.99 24.04 282.46 23.67 282.67 23.49C283.62 22.70 287.02 21.05 288.06 20.86C288.48 20.79 289.26 20.59 289.81 20.42C291.60 19.86 296.45 19.73 298.48 20.19C301.34 20.83 302.42 21.12 302.83 21.37C303.10 21.53 303.61 21.76 303.97 21.88C304.33 22.01 304.81 22.25 305.03 22.42C305.25 22.58 305.61 22.81 305.81 22.92C306.02 23.03 306.48 23.39 306.84 23.73C307.42 24.27 307.50 24.41 307.50 24.84C307.50 25.31 307.39 25.45 305.35 27.57C304.16 28.80 302.77 30.25 302.26 30.79C300.78 32.33 300.37 32.45 299.38 31.57C297.39 29.80 294.66 29.43 291.58 30.52C288.85 31.48 287.41 32.91 286.42 35.62L285.94 36.94L285.94 39.12L285.95 41.31L286.47 42.74C286.76 43.52 287.10 44.28 287.23 44.43C287.35 44.57 287.58 44.88 287.72 45.12C288.08 45.72 288.75 46.34 289.92 47.13C291.28 48.06 292.48 48.37 294.67 48.37C296.82 48.38 297.63 48.10 299.11 46.87C299.69 46.39 300.25 46.00 300.37 46.00C300.67 46.00 301.23 46.45 302.13 47.44C303.09 48.48 306.95 52.59 307.27 52.91C307.59 53.22 307.56 53.79 307.20 54.21C306.74 54.75 303.63 56.88 303.30 56.88C303.21 56.88 302.54 57.06 301.79 57.30C300.45 57.72 298.42 58.05 296.38 58.19C295.79 58.23 295.20 58.28 295.06 58.30C294.93 58.32 294.14 58.29 293.31 58.23ZM117.32 57.44C116.73 57.14 116.75 58.36 116.75 28.96C116.75 -0.66 116.72 0.68 117.32 0.45C117.43 0.41 119.71 0.38 122.39 0.38L127.26 0.37L127.57 0.68L127.88 0.99L127.88 28.86C127.88 58.20 127.89 57.31 127.32 57.44C126.77 57.57 117.57 57.56 117.32 57.44ZM227.53 57.52C227.38 57.50 227.19 57.38 227.13 57.25C227.05 57.11 227.00 50.60 227.00 39.17L226.99 21.31L227.26 21.09C227.71 20.73 237.45 20.76 237.92 21.13L238.25 21.39L238.25 39.24C238.25 56.24 238.24 57.10 238.03 57.29C237.83 57.47 237.21 57.50 232.81 57.53C230.06 57.55 227.69 57.54 227.53 57.52ZM247.03 57.54C246.49 57.32 246.50 57.76 246.50 39.09L246.50 21.41L246.76 21.18C247.01 20.95 247.31 20.94 252.08 20.90L257.13 20.87L257.44 21.18C257.74 21.48 257.75 21.53 257.75 23.38C257.75 24.44 257.81 25.37 257.88 25.51C258.08 25.88 258.48 25.81 258.72 25.36C259.82 23.38 262.11 21.43 264.25 20.65C266.41 19.87 266.48 19.86 269.09 19.90C272.40 19.95 272.05 19.38 272.10 24.93C272.15 30.54 272.10 30.70 270.48 30.19C269.62 29.92 266.05 29.79 264.82 29.98C263.32 30.21 261.45 30.96 260.74 31.60C259.61 32.61 258.64 34.43 257.97 36.81C257.88 37.15 257.81 40.45 257.76 47.13C257.69 56.25 257.67 56.97 257.47 57.29L257.24 57.62L252.22 57.62C249.45 57.61 247.12 57.58 247.03 57.54ZM312.31 57.32L312.00 57.01L312.00 29.10C312.00 -1.91 311.92 0.76 312.85 0.51C313.49 0.33 321.96 0.33 322.47 0.51C323.32 0.80 323.27 0.09 323.26 12.29C323.25 18.35 323.28 23.50 323.33 23.72C323.49 24.56 324.13 24.49 325.01 23.54C326.13 22.34 327.99 21.08 329.31 20.66C331.88 19.82 336.22 19.62 337.94 20.25C338.35 20.40 339.12 20.65 339.64 20.81C340.16 20.96 340.78 21.23 341.01 21.40C341.25 21.58 341.63 21.82 341.88 21.94C342.77 22.39 344.75 24.54 344.75 25.06C344.75 25.14 344.93 25.48 345.14 25.82C346.24 27.55 346.82 30.43 347.12 35.58C347.33 39.11 347.29 56.42 347.07 56.93C346.78 57.63 346.79 57.62 341.52 57.62C336.04 57.62 336.22 57.66 336.00 56.69C335.93 56.40 335.88 51.94 335.88 46.38C335.87 34.98 335.85 34.72 335.05 32.95C334.39 31.47 334.21 31.27 333.12 30.61C332.47 30.23 332.07 30.09 331.28 29.97C328.14 29.52 325.45 30.77 324.23 33.25C323.37 34.98 323.33 35.60 323.25 47.04L323.19 57.02L322.84 57.32L322.49 57.62L317.55 57.62L312.61 57.62L312.31 57.32ZM92.66 48.05C95.17 47.42 96.79 45.81 98.03 42.73L98.55 41.44L98.56 39.25C98.56 37.09 98.56 37.05 98.14 35.81C97.20 33.00 95.75 31.53 92.88 30.48C91.44 29.96 91.44 29.96 89.62 29.95C88.04 29.95 87.72 29.99 87.06 30.23C86.65 30.39 85.98 30.63 85.57 30.76C83.82 31.34 82.49 32.66 81.40 34.89C80.65 36.41 80.44 38.44 80.75 41.14C80.99 43.25 82.53 45.77 84.27 46.90C84.62 47.13 85.08 47.42 85.28 47.55C86.64 48.42 90.23 48.67 92.66 48.05ZM203.03 48.01C205.33 47.33 206.90 45.85 208.08 43.24C208.78 41.69 208.96 40.23 208.76 37.76C208.50 34.49 206.55 31.70 203.88 30.75C203.43 30.60 202.75 30.35 202.38 30.21C201.80 30.00 201.39 29.96 199.88 29.95L198.06 29.95L196.56 30.48C195.74 30.77 194.85 31.16 194.59 31.34C191.18 33.70 189.85 38.55 191.45 42.81C192.12 44.61 193.39 46.29 194.54 46.89C194.69 46.97 195.02 47.20 195.27 47.39C196.55 48.40 200.61 48.73 203.03 48.01ZM228.06 15.25C226.97 14.92 226.84 14.19 226.90 9.21C226.94 6.02 226.98 5.49 227.18 5.03C227.59 4.06 227.56 4.06 232.69 4.06C237.73 4.06 237.70 4.06 238.07 4.94C238.31 5.51 238.32 13.70 238.09 14.36C237.75 15.31 237.77 15.31 232.83 15.34C230.42 15.35 228.27 15.31 228.06 15.25Z"/></svg><span class="product">Delivery Verification System</span></div>
   <div class="appbar-right"><span class="tagline">Inbound verification</span>
     <button class="btn sm icon" id="theme" data-act="theme" aria-label="Switch to dark mode" title="Switch between light and dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path id="theme-icon" d=""/></svg></button>
+    <button class="btn sm" id="help" data-act="help" aria-label="How to use"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.2-2.4 3.6"/><path d="M12 17h.01"/></svg><span class="wide">Help</span></button>
     <button class="btn sm" id="recent" data-act="recent" aria-label="Recent scans"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span class="wide">Recent scans</span></button>
     <button class="btn sm" id="reset" data-act="askreset" hidden><span class="wide">New verification</span><span class="narrow">New</span></button></div>
 </div></header>
-<section class="band"><div class="band-in"><h1>Verify an <em>inbound delivery</em></h1><p>Compare the driver's printed box list with the boxes you are expecting, and see what arrived and what did not.</p></div></section>
+<section class="band"><div class="band-in"><h1>Verify an <em>inbound delivery</em></h1><p>Compare the expected list, the driver's printed list and the boxes actually unloaded, and see what arrived and what did not.</p><button class="link bandlink" data-act="help">New here? See how it works</button></div></section>
 <main class="page" id="app"></main>
 <footer class="footer"><div class="footer-in"><span><b>Blubirch</b><span class="sep">|</span>Delivery Verification System</span><span>&copy; 2026 Blubirch<span class="sep">|</span>Internal use only</span></div></footer>
 <input type="file" id="pick-sheet" accept=".xlsx,.xls,.xlsm,.csv,.txt" hidden>
 <input type="file" id="pick-photos" accept="image/*" multiple hidden>
 <input type="file" id="pick-camera" accept="image/*" capture="environment" hidden>
+<input type="file" id="pick-scans" accept=".xlsx,.xls,.xlsm,.csv,.txt" hidden>
+<input type="file" id="pick-bcphoto" accept="image/*" capture="environment" hidden>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="tess/tesseract.min.js"></script>
@@ -730,14 +851,16 @@ async function readPage(page, D, taken, doubleRead, onProg) {
 }
 /* ---------- state ---------- */
 const S = { sid: uid(), created: Date.now(), profile: "device", mode: null, exp: null, D: null, pages: [], arrived: new Set(), extra: new Set(), items: [], tokens: [], lines: [], group: null,
-  busy: false, tab: "missing", q: "", limit: 200, engineDown: false, sample: false, history: [] };
+  unl: [], U: new Set(), dup: 0,
+  busy: false, tab: null, q: "", limit: 200, engineDown: false, sample: false, history: [] };
 let downloads = null;
 const STANDALONE = !(window.claude && window.claude.use);
 const GENERIC = { generic: true, profile: { generic: true, minLen: 6, maxLen: 40, whitelist: "" } };
 const lsGet = (k, d) => { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
+const hasWork = () => !!(S.D || S.tokens.length || S.unl.length);
 
-/* Saved scans live in this browser's own storage (IndexedDB). Nothing is sent to a server. */
+/* Saved work lives in this browser's own storage (IndexedDB). Nothing is sent to a server. */
 const Store = {
   db: null, mem: new Map(),
   open() {
@@ -755,14 +878,15 @@ function snapshot() {
   return { id: S.sid, profile: S.profile, created: S.created, updated: Date.now(), mode: S.mode, sample: S.sample, group: S.group,
     file: S.exp ? S.exp.file : null, codes: S.D ? S.D.codes : null, labels: S.D ? S.D.labels : null,
     arrived: [...S.arrived], extra: [...S.extra], pages: S.pages.filter(p => p.status === "done").length,
-    items: S.items, tokens: S.tokens, lines: S.lines };
+    items: S.items, tokens: S.tokens, lines: S.lines, unl: S.unl, dup: S.dup };
 }
 let saveT = null;
 function persist() {
-  if (!S.D && !S.tokens.length) return;
+  if (!hasWork()) return;
   clearTimeout(saveT);
   saveT = setTimeout(async () => { await Store.put(snapshot()); lsSet("blubirch.last.device", S.sid); await loadHistory(); }, 250);
 }
+async function saveNow() { clearTimeout(saveT); if (hasWork()) await Store.put(snapshot()); }
 async function loadHistory() {
   const all = await Store.all();
   S.history = all.sort((a, b) => b.updated - a.updated);
@@ -772,11 +896,13 @@ async function loadHistory() {
 }
 function blank() {
   S.pages.forEach(p => p.thumb && URL.revokeObjectURL(p.thumb));
-  Object.assign(S, { sid: uid(), created: Date.now(), mode: null, exp: null, D: null, pages: [], arrived: new Set(), extra: new Set(), items: [], tokens: [], lines: [], group: null, tab: "missing", q: "", sample: false, engineDown: false });
+  Object.assign(S, { sid: uid(), created: Date.now(), mode: null, exp: null, D: null, pages: [], arrived: new Set(), extra: new Set(), items: [], tokens: [], lines: [], group: null,
+    unl: [], U: new Set(), dup: 0, tab: null, q: "", sample: false, engineDown: false });
 }
 function openSession(j) {
   blank();
-  Object.assign(S, { sid: j.id, created: j.created, mode: j.mode, sample: !!j.sample, group: j.group || null, arrived: new Set(j.arrived || []), extra: new Set(j.extra || []), items: j.items || [], tokens: j.tokens || [], lines: j.lines || [] });
+  Object.assign(S, { sid: j.id, created: j.created, mode: j.mode, sample: !!j.sample, group: j.group || null, arrived: new Set(j.arrived || []), extra: new Set(j.extra || []), items: j.items || [], tokens: j.tokens || [], lines: j.lines || [],
+    unl: j.unl || [], U: new Set((j.unl || []).map(x => x.c)), dup: j.dup || 0 });
   if (j.codes && j.codes.length) { S.exp = { file: j.file, cols: [{ sheet: "", col: "", header: "", codes: j.codes, labels: j.labels || {}, dupes: 0, skipped: 0, risky: 0 }], pick: 0 }; S.D = hydrate(j.codes, j.labels); }
   for (let i = 0; i < (j.pages || 0); i++) S.pages.push({ id: uid(), name: "Page " + (i + 1), status: "done", restored: true });
   lsSet("blubirch.last.device", S.sid);
@@ -799,9 +925,14 @@ function tokenGroups() {
 function captureRows() {
   const groups = tokenGroups(); if (!groups.length) return { groups, L: 0, rows: [] };
   const L = groups.some(g => g.len === S.group) ? S.group : groups[0].len, seen = new Set(), rows = [];
+  /* Box numbers on one sheet share a pattern. Text that is mostly letters where box numbers are mostly digits (headers, names) is not a box number. */
+  const share = x => countDigits(x) / Math.max(1, x.length);
+  const typical = S.tokens.filter(t => !t.removed && t.sure && t.value.length === L).map(t => share(t.value)).sort((x, y) => x - y);
+  const med = typical.length ? typical[Math.floor(typical.length / 2)] : 0;
   for (const t of S.tokens) {
     if (t.removed) continue;
     if (!(t.fixed || t.reads.some(r => Math.abs(r.length - L) <= 1))) continue;
+    if (!t.fixed && med >= 0.4 && Math.max(...t.reads.map(share)) < med * 0.5) continue;
     const show = t.sure ? t.value : (t.reads.find(r => r.length === L) || t.reads[0]);
     const sure = t.fixed || (t.sure && show.length === L); // a number one character too long or short is never trusted
     if (sure) { const k = canon(show); if (seen.has(k)) continue; seen.add(k); }
@@ -835,7 +966,7 @@ function compareStored() {
 }
 function setExpected(exp) {
   const c = exp.cols[exp.pick];
-  S.exp = exp; S.D = hydrate(c.codes, c.labels); S.tab = "missing"; S.q = "";
+  S.exp = exp; S.D = hydrate(c.codes, c.labels); S.tab = null; S.q = "";
   if (S.tokens.length) { S.mode = "verify"; compareStored(); toast("Expected list loaded. The saved driver's list has been compared with it."); }
   else { S.mode = "verify"; S.pages.forEach(p => p.thumb && URL.revokeObjectURL(p.thumb)); S.pages = []; S.arrived = new Set(); S.extra = new Set(); S.items = []; }
   persist(); render();
@@ -849,7 +980,7 @@ async function loadSheet(file) {
   } catch (e) { toast("This file could not be read. Save it as .xlsx or .csv and try again."); }
 }
 
-/* ---------- scanning ---------- */
+/* ---------- driver's list photos ---------- */
 function addPages(files) {
   if (!S.D && S.mode !== "capture") return;
   for (const f of files) S.pages.push({ id: uid(), file: f, name: "Page " + (S.pages.length + 1), status: "queued", progress: 0, thumb: URL.createObjectURL(f) });
@@ -885,6 +1016,257 @@ async function runQueue() {
   S.busy = false; render();
 }
 
+/* ---------- reconciliation: expected, driver's list, unloaded ---------- */
+/* The driver's list as it stands: confirmed lines only. Lines still waiting for a person are reported separately. */
+function driverInfo() {
+  const done = S.pages.some(p => p.status === "done");
+  if (S.D) return { has: !!(done || S.arrived.size || S.extra.size || S.items.length), codes: [...S.arrived, ...S.extra], pending: S.items.length };
+  if (S.tokens.length || done) { const r = captureRows().rows; return { has: true, codes: r.filter(x => x.sure).map(x => x.show), pending: r.filter(x => !x.sure).length, capture: true }; }
+  return { has: false, codes: [], pending: 0 };
+}
+/* key = one character per list: 1 present, 0 absent, - list not provided. [label, meaning, tone, order] */
+const GROUPS = {
+  "110": ["Short delivery", "Expected and on the driver's list, but not unloaded", "bad", 1],
+  "100": ["Not dispatched", "Expected, but not on the driver's list and not unloaded", "bad", 2],
+  "001": ["Unknown box", "Unloaded, but not expected and not on the driver's list", "bad", 3],
+  "011": ["Received, not expected", "On the driver's list and unloaded, but not in the expected list", "warn", 4],
+  "101": ["Received, not on driver's list", "Expected and unloaded, but missing from the driver's list", "warn", 5],
+  "010": ["Listed only", "On the driver's list only: not expected and not unloaded", "mut", 6],
+  "111": ["Received as planned", "Expected, on the driver's list and unloaded", "ok", 9],
+  "10-": ["Not on driver's list", "Expected but not on the driver's list", "bad", 1],
+  "01-": ["Not expected", "On the driver's list but not in the expected list", "warn", 4],
+  "11-": ["On driver's list", "Expected and on the driver's list", "ok", 9],
+  "1-0": ["Not received", "Expected but not unloaded", "bad", 1],
+  "0-1": ["Received, not expected", "Unloaded but not in the expected list", "warn", 4],
+  "1-1": ["Received", "Expected and unloaded", "ok", 9],
+  "-10": ["Short delivery", "On the driver's list but not unloaded", "bad", 1],
+  "-01": ["Received, not on driver's list", "Unloaded but not on the driver's list", "warn", 4],
+  "-11": ["Received as listed", "On the driver's list and unloaded", "ok", 9],
+  "--1": ["Unloaded", "Scanned at unloading", "ok", 9]
+};
+const FULL_ORDER = ["110", "100", "001", "011", "101", "010", "111"];
+function reconcile() {
+  const E = S.D ? S.D.codes : null, dr = driverInfo();
+  const has = { E: !!E, D: dr.has, U: S.unl.length > 0 };
+  const Eset = E ? S.D.set : new Set(), U = S.U;
+  /* Barcodes are exact. A box number read from the driver's photo is tied to an exact code when it matches one by look-alike-safe comparison. */
+  const byCanon = new Map(), addC = c => { const k = canon(c), a = byCanon.get(k) || byCanon.set(k, []).get(k); if (!a.includes(c)) a.push(c); };
+  if (E) E.forEach(addC); U.forEach(addC);
+  const Dset = new Set();
+  for (const d of dr.codes) { if (Eset.has(d) || U.has(d)) { Dset.add(d); continue; } const h = byCanon.get(canon(d)); Dset.add(h && h.length === 1 ? h[0] : d); }
+  const all = [], seen = new Set(), push = c => { if (!seen.has(c)) { seen.add(c); all.push(c); } };
+  if (E) E.forEach(push); Dset.forEach(push); S.unl.forEach(x => push(x.c));
+  const rows = all.map(c => {
+    const e = Eset.has(c), d = Dset.has(c), u = U.has(c);
+    return { c, e, d, u, key: (has.E ? (e ? "1" : "0") : "-") + (has.D ? (d ? "1" : "0") : "-") + (has.U ? (u ? "1" : "0") : "-") };
+  });
+  const groups = new Map(); for (const r of rows) (groups.get(r.key) || groups.set(r.key, []).get(r.key)).push(r.c);
+  const n = has.E + has.D + has.U;
+  const keys = n === 3 ? FULL_ORDER : [...groups.keys()].filter(k => GROUPS[k]).sort((a, b) => GROUPS[a][3] - GROUPS[b][3]);
+  return { has, n, rows, groups, keys, dr, Eset, Dset, U };
+}
+/* Top-line answer: what physically arrived against the plan. Uses the most reliable pair of lists available. */
+function headline(R) {
+  const { has } = R; let ref, act, L, k;
+  if (has.U && has.E) { ref = R.Eset; act = R.U; L = [["Received", "expected and unloaded"], ["Not received", "expected but not unloaded"], ["Not expected", "unloaded but not in your Excel"]]; k = ["1-1", "1-0", "0-1"]; }
+  else if (has.U && has.D) { ref = R.Dset; act = R.U; L = [["Received", "on the driver's list and unloaded"], ["Short delivery", "on the driver's list but not unloaded"], ["Not on driver's list", "unloaded but not on the driver's list"]]; k = ["-11", "-10", "-01"]; }
+  else if (has.E && has.D) { ref = R.Eset; act = R.Dset; L = [["On driver's list", "expected and on the driver's list"], ["Not on driver's list", "expected but not on the driver's list"], ["Not expected", "on the driver's list but not in your Excel"]]; k = ["11-", "10-", "01-"]; }
+  else return null;
+  let m = 0, miss = 0, ex = 0; for (const c of ref) act.has(c) ? m++ : miss++; for (const c of act) if (!ref.has(c)) ex++;
+  return [[L[0], m, "ok", k[0]], [L[1], miss, "bad", k[1]], [L[2], ex, "warn", k[2]]];
+}
+/* Lines from the driver's photo that match exactly one unloaded box. Offered to a person to confirm in one step, never applied silently. */
+function uMatches() {
+  const out = [], cm = new Map(); if (!S.unl.length) return out;
+  S.U.forEach(c => { const k = canon(c), a = cm.get(k) || cm.set(k, []).get(k); a.push(c); });
+  const hits = list => [...new Set(list.flatMap(x => S.U.has(x) ? [x] : (cm.get(canon(x)) || [])))];
+  if (S.D) { for (const it of S.items) { const h = hits([...it.sugg, ...(it.value ? [it.value] : [])]); if (h.length === 1) out.push({ it, c: h[0] }); } }
+  else { for (const r of captureRows().rows) if (!r.sure) { const h = hits(r.t.reads); if (h.length === 1) out.push({ t: r.t, c: h[0] }); } }
+  return out;
+}
+
+/* ---------- unloading scan ---------- */
+const SC = { open: false, typed: false, keys: [], autoT: null, cam: null, ac: null, fb: null, drv: new Set() };
+function normScan(raw) { let s = String(raw || "").trim(); if (/^\][A-Za-z]\d/.test(s)) s = s.slice(3); return cleanCode(s); }
+function scanStatus(c) {
+  if (S.D) return S.D.set.has(c) ? ["ok", "Expected"] : ["warn", "Not expected"];
+  if (SC.drv.size) return SC.drv.has(canon(c)) ? ["ok", "On driver's list"] : ["warn", "Not on driver's list"];
+  return ["ok", "Scanned"];
+}
+const fmtTime = t => new Date(t).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+function addUnloaded(raw, how) {
+  const c = normScan(raw);
+  if (c.length < 4) { scanFeedback("bad", String(raw || "").trim() || "Empty scan", "Not a box number", "Scan the box label again."); beep("bad"); return false; }
+  if (S.U.has(c)) {
+    S.dup++; const was = S.unl.find(x => x.c === c);
+    scanFeedback("bad", c, "Already scanned", was ? "First scanned at " + fmtTime(was.t) + ". Not counted again." : "Not counted again."); beep("bad"); persist(); scanPaint(); return false;
+  }
+  const [tone, label] = scanStatus(c);
+  S.unl.push({ c, t: Date.now(), m: how }); S.U.add(c);
+  scanFeedback(tone, c, label, tone === "ok" ? "Saved." : S.D ? "Saved. This box is not in the expected list." : "Saved. This box is not on the driver's list.");
+  beep(tone); persist(); scanPaint(); renderSoon();
+  return true;
+}
+function removeUnloaded(c) { const i = S.unl.findIndex(x => x.c === c); if (i < 0) return; S.unl.splice(i, 1); S.U.delete(c); persist(); scanPaint(); renderSoon(); }
+function scanFeedback(tone, code, label, hint) { SC.fb = { tone, code, label, hint, n: (SC.fb ? SC.fb.n : 0) + 1 }; paintFeedback(); }
+function paintFeedback() {
+  const el = $("#sc-fb"); if (!el) return;
+  const f = SC.fb || { tone: "", code: "", label: "Ready to scan", hint: "Scan each box label as it comes off the truck. Every scan is saved straight away." };
+  el.className = "sc-fb " + f.tone; el.innerHTML = `<span class="fb-l">${esc(f.label)}</span>${f.code ? `<span class="fb-c">${esc(fmtCode(f.code))}</span>` : ""}<span class="fb-h">${esc(f.hint)}</span>`;
+  if (f.n) { el.classList.remove("flash"); void el.offsetWidth; el.classList.add("flash"); }
+}
+function beep(tone) {
+  try {
+    const A = SC.ac; if (A) {
+      if (A.state === "suspended") A.resume();
+      const seq = tone === "ok" ? [[1175, .08]] : tone === "warn" ? [[784, .08], [784, .08]] : [[196, .26]];
+      let t = A.currentTime;
+      for (const [f, d] of seq) { const o = A.createOscillator(), g = A.createGain(); o.type = tone === "ok" ? "sine" : "square"; o.frequency.value = f; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.16, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g).connect(A.destination); o.start(t); o.stop(t + d + .02); t += d + .07; }
+    }
+  } catch (e) {}
+  try { if (navigator.vibrate) navigator.vibrate(tone === "ok" ? 40 : tone === "warn" ? [60, 50, 60] : 220); } catch (e) {}
+}
+function scanOpen() {
+  if (SC.open) return focusBc();
+  SC.open = true; SC.fb = null; SC.drv = new Set(driverInfo().codes.map(canon));
+  try { SC.ac = SC.ac || new (window.AudioContext || window.webkitAudioContext)(); SC.ac.resume(); } catch (e) {}
+  const d = document.createElement("div"); d.className = "scanner"; d.id = "scanner"; d.setAttribute("role", "dialog"); d.setAttribute("aria-modal", "true"); d.setAttribute("aria-label", "Unloading scan");
+  d.innerHTML = `<div class="sc-bar"><div class="sc-title"><b>Unloading scan</b><span id="sc-sub"></span></div><button class="btn primary sm" data-act="scanclose">Done</button></div>
+    <div class="sc-body">
+      <div class="sc-main">
+        <div class="sc-fb" id="sc-fb" aria-live="polite"></div>
+        <form class="sc-in" id="sc-form" autocomplete="off"><input id="bc" class="bcin" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" enterkeyhint="done" aria-label="Box barcode" placeholder="Scan a barcode"><button class="btn primary" type="submit">Add</button></form>
+        <div class="sc-tools"><button class="btn sm" data-act="scantype" id="sc-type" aria-pressed="false">${ICON.kbd} Type a number</button><button class="btn sm" data-act="camon" id="sc-camb">${ICON.cam} Use camera</button><button class="btn sm ghost" data-act="scanundo">Undo last scan</button></div>
+        <div class="sc-cam" id="sc-cam" hidden><video id="sc-video" playsinline muted></video><div class="sc-frame"></div><div class="sc-camstat" id="sc-camstat">Starting camera</div><button class="btn sm" data-act="camoff">Stop camera</button></div>
+        <div class="notice warn" id="sc-camfail" hidden><b id="sc-camwhy"></b> Use a handheld scanner, type the number, or take a photo of the barcode.<div class="actions" style="margin-top:10px"><button class="btn sm" data-act="bcphoto">${ICON.cam} Take photo of barcode</button></div></div>
+        <div class="sc-stats" id="sc-stats"></div>
+      </div>
+      <div class="sc-side"><div class="sc-listhead"><b>Scanned boxes</b><span id="sc-n" class="muted small"></span></div><div class="sc-list" id="sc-list"></div></div>
+    </div>`;
+  document.body.appendChild(d); document.body.classList.add("noscroll");
+  paintFeedback(); scanPaint(); focusBc();
+}
+function scanClose() { camOff(); const d = $("#scanner"); if (d) d.remove(); SC.open = false; document.body.classList.remove("noscroll"); saveNow().then(loadHistory); render(); }
+function focusBc() { const i = $("#bc"); if (i && SC.open && !$(".modal")) i.focus({ preventScroll: true }); }
+function scanPaint() {
+  if (!SC.open) return;
+  const n = S.unl.length, E = S.D ? S.D.codes : null;
+  let ok = 0, warn = 0; for (const x of S.unl) scanStatus(x.c)[0] === "ok" ? ok++ : warn++;
+  $("#sc-sub").textContent = plural(n, "box") + " scanned";
+  const exp = E ? E.filter(c => S.U.has(c)).length : 0, pct = E && E.length ? Math.round(exp / E.length * 100) : 0;
+  const tiles = [];
+  tiles.push(`<div class="stat"><div class="lbl">Scanned</div><div class="num">${n}</div><div class="of">${E ? `${exp} of ${E.length} expected` : SC.drv.size ? `${ok} on driver's list` : "boxes so far"}</div>${E ? `<div class="meter"><i style="width:${pct}%"></i></div>` : ""}</div>`);
+  tiles.push(`<div class="stat"><div class="lbl"><i class="dot warn"></i>${S.D ? "Not expected" : "Not on driver's list"}</div><div class="num">${S.D || SC.drv.size ? warn : 0}</div><div class="of">${S.D || SC.drv.size ? "saved and flagged" : "no list to check against"}</div></div>`);
+  tiles.push(`<div class="stat"><div class="lbl"><i class="dot bad"></i>Repeat scans</div><div class="num">${S.dup}</div><div class="of">ignored, counted once</div></div>`);
+  $("#sc-stats").innerHTML = tiles.join("");
+  $("#sc-n").textContent = n ? "newest first" : "";
+  const recent = S.unl.slice(-60).reverse();
+  $("#sc-list").innerHTML = recent.length ? recent.map(x => { const [t, l] = scanStatus(x.c); return `<div class="sc-row"><span class="code">${esc(fmtCode(x.c))}</span><span class="chip ${t}">${l}</span><time>${fmtTime(x.t)}</time><button class="xbtn" data-act="scanrm" data-code="${esc(x.c)}" aria-label="Remove ${esc(x.c)}" title="Remove this scan">${ICON.x}</button></div>`; }).join("") + (n > 60 ? `<div class="empty">and ${n - 60} earlier scans</div>` : "")
+    : `<div class="empty">Scanned boxes appear here.</div>`;
+}
+function commitBc() { const i = $("#bc"); if (!i) return; clearTimeout(SC.autoT); SC.keys = []; const v = i.value; i.value = ""; if (v.trim()) addUnloaded(v, SC.typed ? "typed" : "scanner"); focusBc(); }
+
+/* Camera: the browser's own barcode reader where it exists (Chrome on Android), the bundled reader everywhere else. */
+const WANT = ["code_128", "code_39", "code_93", "codabar", "ean_13", "ean_8", "itf", "upc_a", "upc_e", "qr_code", "data_matrix", "pdf417"];
+let detectorP = null;
+function loadZXing() {
+  if (window.ZXing) return Promise.resolve();
+  return new Promise((res, rej) => { const s = document.createElement("script"); s.src = "lib/zxing.min.js"; s.onload = () => window.ZXing ? res() : rej(new Error("zxing")); s.onerror = rej; document.head.appendChild(s); });
+}
+function getDetector() {
+  if (detectorP) return detectorP;
+  detectorP = (async () => {
+    try {
+      if ("BarcodeDetector" in window) {
+        const sup = await BarcodeDetector.getSupportedFormats(), f = WANT.filter(x => sup.includes(x));
+        if (f.length) { const bd = new BarcodeDetector({ formats: f }); return src => bd.detect(src).then(r => r.map(x => x.rawValue)); }
+      }
+    } catch (e) {}
+    await loadZXing();
+    const Z = window.ZXing, F = Z.BarcodeFormat, hints = new Map();
+    hints.set(Z.DecodeHintType.POSSIBLE_FORMATS, [F.CODE_128, F.CODE_39, F.CODE_93, F.CODABAR, F.EAN_13, F.EAN_8, F.ITF, F.UPC_A, F.UPC_E, F.QR_CODE, F.DATA_MATRIX, F.PDF_417]);
+    hints.set(Z.DecodeHintType.TRY_HARDER, true);
+    const rd = new Z.MultiFormatReader(); rd.setHints(hints);
+    const cv = document.createElement("canvas"), cx = cv.getContext("2d", { willReadFrequently: true });
+    const tryCanvas = () => { try { return [rd.decodeWithState(new Z.BinaryBitmap(new Z.HybridBinarizer(new Z.HTMLCanvasElementLuminanceSource(cv)))).getText()]; } catch (e) { return []; } };
+    return async (src, angle) => {
+      const w = src.videoWidth || src.width, h = src.videoHeight || src.height; if (!w || !h) return [];
+      const k = Math.min(1, 1600 / Math.max(w, h)), W = Math.round(w * k), H = Math.round(h * k);
+      if (!angle) { cv.width = W; cv.height = H; cx.drawImage(src, 0, 0, W, H); return tryCanvas(); }
+      const r = angle * Math.PI / 180, c = Math.abs(Math.cos(r)), s = Math.abs(Math.sin(r));
+      cv.width = Math.round(W * c + H * s); cv.height = Math.round(W * s + H * c);
+      cx.fillStyle = "#fff"; cx.fillRect(0, 0, cv.width, cv.height);
+      cx.save(); cx.translate(cv.width / 2, cv.height / 2); cx.rotate(r); cx.drawImage(src, -W / 2, -H / 2, W, H); cx.restore();
+      return tryCanvas();
+    };
+  })().catch(e => { detectorP = null; throw e; });
+  return detectorP;
+}
+function camStat(t) { const e = $("#sc-camstat"); if (e) e.textContent = t; }
+function camFail(why) { camOff(); const f = $("#sc-camfail"); if (!f) return; $("#sc-camwhy").textContent = why; f.hidden = false; }
+async function camOn() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return camFail("The live camera is not available here.");
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false }); }
+  catch (e) { return camFail(e && e.name === "NotAllowedError" ? "Camera access was not allowed." : "The live camera is not available here."); }
+  if (!SC.open) { stream.getTracks().forEach(t => t.stop()); return; }
+  const v = $("#sc-video"); v.srcObject = stream; $("#sc-cam").hidden = false; $("#sc-camfail").hidden = true; $("#sc-camb").hidden = true;
+  try { await v.play(); } catch (e) {}
+  let det; try { det = await getDetector(); } catch (e) { stream.getTracks().forEach(t => t.stop()); return camFail("The barcode reader could not load."); }
+  SC.cam = { stream, v, det, last: "", lastT: 0, pend: "", busy: false };
+  camStat("Hold a box label inside the frame");
+  SC.cam.timer = setInterval(camTick, 150);
+}
+function camOff() {
+  const C = SC.cam; SC.cam = null;
+  if (C) { clearInterval(C.timer); C.stream.getTracks().forEach(t => t.stop()); }
+  const box = $("#sc-cam"); if (box) { box.hidden = true; $("#sc-camb").hidden = false; const v = $("#sc-video"); if (v) v.srcObject = null; }
+}
+/* Pick the box barcode out of everything the camera sees. Labels often carry several barcodes (pin code, order number). */
+function pickCodes(raw) {
+  const codes = [...new Set(raw.map(normScan).filter(c => c.length >= 4))];
+  const listed = c => (S.D && S.D.set.has(c)) || SC.drv.has(canon(c));
+  const fits = c => S.D ? S.D.profile.lens.has(c.length) : true;
+  const a = codes.filter(listed); if (a.length) return { codes: a, listed: true };
+  return { codes: codes.filter(fits), listed: false, other: codes.length };
+}
+async function camTick() {
+  const C = SC.cam; if (!C || C.busy || C.v.readyState < 2) return;
+  C.busy = true; let raw = []; try { raw = await C.det(C.v); } catch (e) {} C.busy = false;
+  if (SC.cam !== C || !raw.length) return;
+  const { codes, listed, other } = pickCodes(raw), now = Date.now();
+  if (!codes.length) { if (other) camStat("Barcode found, but it is not a box number"); return; }
+  for (const c of codes) {
+    if (c === C.last && now - C.lastT < 3000) { C.lastT = now; continue; } // same label still in view
+    if (!listed && C.pend !== c) { C.pend = c; continue; } // an unlisted number must read the same twice in a row
+    C.pend = ""; C.last = c; C.lastT = now; addUnloaded(c, "camera"); camStat("Hold the next label inside the frame"); break;
+  }
+}
+async function decodePhoto(file) {
+  try {
+    const det = await getDetector(), bmp = await fileToBitmap(file);
+    let raw = [];
+    for (const a of [0, 90, -6, 6, -12, 12, 84, 96]) { raw = await det(bmp, a); if (raw.length) break; } // a photo is held at an angle more often than a live feed
+    if (bmp.close) bmp.close();
+    const { codes } = pickCodes(raw);
+    if (!codes.length) { scanFeedback("bad", "", raw.length ? "No box number found" : "No barcode found", raw.length ? "The photo has a barcode, but not a box number." : "Hold the phone closer so the barcode fills more of the photo, then try again."); beep("bad"); return; }
+    addUnloaded(codes[0], "photo");
+  } catch (e) { scanFeedback("bad", "", "Photo could not be read", "Try again, or type the number."); beep("bad"); }
+  focusBc();
+}
+async function importScans(file) {
+  try {
+    const cols = readWorkbook(await file.arrayBuffer(), file.name);
+    if (!cols.length) return toast("No column of box numbers was found in this file.");
+    let add = 0, rep = 0; const now = Date.now();
+    for (const c of cols[0].codes) { if (S.U.has(c)) { rep++; continue; } S.unl.push({ c, t: now, m: "import" }); S.U.add(c); add++; }
+    persist(); render(); scanPaint();
+    toast(`${plural(add, "box")} added from ${file.name}${rep ? `, ${rep} already scanned` : ""}.`);
+  } catch (e) { toast("This file could not be read. Save it as .xlsx or .csv and try again."); }
+}
+let renderT = null;
+function renderSoon() { clearTimeout(renderT); renderT = setTimeout(render, 300); }
+
 /* ---------- views ---------- */
 const ICON = {
   cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>',
@@ -893,15 +1275,22 @@ const ICON = {
   down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 20h14"/></svg>',
   sheet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>',
   print: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2"/><rect x="7" y="14" width="10" height="6"/></svg>',
+  scan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M17 8v8" stroke-width="1.5"/><path d="M15 8v8" stroke-width="1"/></svg>',
+  kbd: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h.01M11 10h.01M15 10h.01M7 14h10"/></svg>',
+  x: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  yes: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
   tick: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'
 };
+const repIcon = () => `<span class="repicon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M9 13h6M9 17h4M9 9h2"/></svg></span>`;
 const stepNo = (n, state) => `<span class="stepno ${state}">${state === "done" ? ICON.tick : n}</span>`;
 const fmtWhen = t => new Date(t).toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 function render() {
+  clearTimeout(renderT);
   const D = S.D, reading = S.pages.some(p => p.status === "reading" || p.status === "queued"), scanned = S.pages.some(p => p.status === "done");
-  $("#reset").hidden = !D && S.mode !== "capture";
+  $("#reset").hidden = !hasWork() && S.mode !== "capture";
   const ready = !!D || S.mode === "capture";
-  $("#app").innerHTML = step1(D) + step2(ready, scanned) + `<div class="span">${S.mode === "capture" && !D ? step3capture(scanned, reading) : step3(D, scanned, reading)}</div>`;
+  $("#app").innerHTML = step1(D) + step2(ready, scanned) + step3() + `<div class="span">${reportCard(reading)}</div>`;
+  if (SC.open) scanPaint();
 }
 function step1(D) {
   if (!D && S.mode === "capture") return `<section class="card"><div class="card-head">${stepNo(1, "")}<h2>Expected delivery list</h2><span class="state">Not available yet</span></div><div class="card-body">
@@ -929,81 +1318,123 @@ function step2(ready, scanned) {
     ${S.engineDown ? `<div class="notice bad">The reader could not start in this view. Reload the page, or open it in Chrome or Safari, and scan again.</div>` : ""}
     ${S.pages.length ? `<div class="pages">${rows}</div>` : ""}</div></section>`;
 }
+function step3() {
+  const n = S.unl.length;
+  if (!n) return `<section class="card step3"><div class="card-head">${stepNo(3, "")}<h2>Unloaded boxes</h2><span class="chip mut opt">Optional</span></div><div class="card-body">
+    <div class="drop">${ICON.scan}<div class="drop-text"><b>Scan the boxes as they unload</b><span>Now or later. The report updates as boxes are scanned.</span></div><div class="drop-btns"><button class="btn primary" data-act="scanopen">Start scanning</button><button class="btn" data-act="pickscans">Import scan list</button></div></div></div></section>`;
+  const E = S.D ? S.D.codes : null, hit = E ? E.filter(c => S.U.has(c)).length : 0, last = S.unl[n - 1];
+  return `<section class="card step3"><div class="card-head">${stepNo(3, "done")}<h2>Unloaded boxes</h2><span class="state">${plural(n, "box")} scanned</span></div><div class="card-body">
+    <div class="ustat"><span class="ubig">${n}</span><div><div class="pn">boxes scanned</div><div class="muted small">Last scan ${esc(fmtWhen(last.t))}${S.dup ? ` · ${plural(S.dup, "repeat scan")} ignored` : ""}</div></div></div>
+    ${E ? `<div class="uprog"><div class="muted small">${hit} of ${E.length} expected boxes scanned</div><div class="meter"><i style="width:${E.length ? Math.round(hit / E.length * 100) : 0}%"></i></div></div>` : ""}
+    <div class="actions"><button class="btn primary" data-act="scanopen">${ICON.scan} Continue scanning</button><button class="btn" data-act="pickscans">Import</button><button class="btn" data-act="exportscans">${ICON.down} Export</button></div>
+  </div></section>`;
+}
 function historyList() {
   const rows = S.history.slice(0, 20).map(h => {
-    const cur = h.id === S.sid, exp = h.codes ? h.codes.length : 0;
-    const title = h.file || "Driver's list only";
-    const sub = h.codes ? `${(h.arrived || []).length} of ${exp} arrived${(h.items || []).length ? " · " + h.items.length + " to confirm" : ""}` : `${(h.tokens || []).filter(t => !t.removed).length} numbers read · waiting for expected list`;
-    return `<div class="hrow"><div style="min-width:0"><div class="pn">${esc(title)}</div><div class="muted small">${esc(fmtWhen(h.updated))} · ${esc(sub)}</div></div>
+    const cur = h.id === S.sid, parts = [];
+    if (h.codes) parts.push(plural(h.codes.length, "box") + " expected");
+    if (h.pages || (h.tokens || []).length) parts.push("driver's list read");
+    if ((h.unl || []).length) parts.push(plural(h.unl.length, "box") + " unloaded");
+    if (!h.codes) parts.push("no expected list yet");
+    return `<div class="hrow"><div style="min-width:0"><div class="pn">${esc(h.file || "No expected list")}</div><div class="muted small">${esc(fmtWhen(h.updated))} · ${esc(parts.join(" · "))}</div></div>
       ${cur ? '<span class="chip ok">Open now</span>' : `<div class="hbtns"><button class="btn sm" data-act="hopen" data-id="${esc(h.id)}">Open</button><button class="btn sm ghost" data-act="hdel" data-id="${esc(h.id)}">Delete</button></div>`}</div>`;
   }).join("");
-  return `<h2>Recent scans</h2><p class="muted small">Scans made on this device. Open one to see its result, download the report again, or add the expected list to a saved driver's list.</p>
+  return `<h2>Recent scans</h2><p class="muted small">Work saved on this device. Open one to see its report, download it again, or add a list that arrived later.</p>
     ${rows ? `<div class="pages" id="hlist">${rows}</div>` : `<p class="muted" id="hlist">No scans saved yet.</p>`}`;
 }
 function showHistory() { showModal(historyList(), []); $(".modal .card").classList.add("wide-modal"); S.histOpen = true; }
-function step3(D, scanned, reading) {
-  if (!D || !scanned) return `<section class="card pending"><div class="card-head">${stepNo(3, "")}<h2>Verification result</h2><span class="state">${reading ? "Reading the photos" : D ? "Scan the driver's list to see results" : "Complete steps 1 and 2"}</span></div></section>`;
-  const missing = D.codes.filter(c => !S.arrived.has(c));
-  const tabs = [["missing", "Not arrived", missing.length], ["arrived", "Arrived", S.arrived.size], ["extra", "Not expected", S.extra.size]];
-  const checks = S.items.map(it => {
-    const sugg = it.sugg.slice(0, 2), ref = sugg[0], extras = it.value && !D.set.has(it.value) && !(D.byCanon.get(canon(it.value)) || []).length ? [it.value] : [];
-    return `<div class="rv">${it.crop ? `<div class="strip"><img src="${it.crop}" alt="Photo of the printed line"></div>` : ""}
-      <div><div class="muted small">Read as</div><div class="readas">${it.reads.slice(0, 3).map(r => diffMark(r, ref)).join("<br>")}</div></div>
-      <div class="choices">${sugg.map(c => `<button class="btn" data-act="pick" data-id="${it.id}" data-code="${esc(c)}">Confirm&nbsp;<span class="code">${esc(fmtCode(c))}</span>${S.arrived.has(c) ? '&nbsp;<span class="chip mut">already counted</span>' : ""}</button>`).join("")}
-      ${extras.map(c => `<button class="btn" data-act="extra" data-id="${it.id}" data-code="${esc(c)}">Not expected:&nbsp;<span class="code">${esc(c)}</span></button>`).join("")}
-      <button class="btn ghost" data-act="skip" data-id="${it.id}">Skip</button></div></div>`;
-  }).join("");
-  return `<section class="card"><div class="card-head">${stepNo(3, !reading && !S.items.length ? "done" : "now")}<h2>Verification result</h2><span class="state">${reading ? "Reading more pages" : missing.length ? plural(missing.length, "box") + " outstanding" : "All boxes arrived"}</span></div><div class="card-body">
-    <div class="stats">
-      <div class="stat"><div class="lbl"><i class="dot ok"></i>Arrived</div><div class="num">${S.arrived.size}</div><div class="of">expected and on the driver's list</div></div>
-      <div class="stat"><div class="lbl"><i class="dot bad"></i>Not arrived</div><div class="num">${missing.length}</div><div class="of">expected but not on the driver's list</div></div>
-      <div class="stat"><div class="lbl"><i class="dot warn"></i>Not expected</div><div class="num">${S.extra.size}</div><div class="of">on the driver's list but not in your Excel</div></div>
-    </div>
-    <div class="actions"><button class="btn primary" data-act="export">${ICON.down} Download results (Excel)</button><button class="btn" data-act="pdf">${ICON.print} Print-ready report (PDF)</button><button class="btn ghost" data-act="copymissing">Copy not-arrived list</button></div>
-    ${S.items.length ? `<div class="review"><div class="review-head"><b>${S.items.length === 1 ? "1 line needs" : S.items.length + " lines need"} your confirmation.</b> These could not be read with certainty. Compare each with the photo strip and confirm. They are not counted until you do.</div>${checks}</div>` : ""}
-    <div class="tabs" role="tablist">${tabs.map(([k, t, v]) => `<button class="tab" role="tab" data-act="tab" data-tab="${k}" aria-selected="${S.tab === k}">${t}<span class="ct">${v}</span></button>`).join("")}</div>
-    <input class="input" id="q" type="search" placeholder="Search box numbers" value="${esc(S.q)}" aria-label="Search box numbers">
-    <div class="table" id="list">${listRows(D, missing)}</div>
-  </div></section>`;
-}
-function step3capture(scanned, reading) {
-  if (!scanned) return `<section class="card pending"><div class="card-head">${stepNo(3, "")}<h2>Driver's list, soft copy</h2><span class="state">${reading ? "Reading the photos" : "Scan the driver's list to build it"}</span></div></section>`;
-  const { groups, L, rows } = captureRows(), sure = rows.filter(r => r.sure).length, unsure = rows.filter(r => !r.sure);
-  const checks = unsure.slice(0, 40).map(({ t }) => `<div class="rv"><div class="strip"><img src="${t.crop}" alt="Photo of the printed line"></div>
-      <div class="choices">${[...new Set(t.reads)].slice(0, 3).map(r => `<button class="btn" data-act="tuse" data-id="${t.id}" data-code="${esc(r)}">Use&nbsp;<span class="code">${esc(r)}</span></button>`).join("")}
+
+/* ---------- report ---------- */
+function reviewBlock(R) {
+  const um = R.has.U ? uMatches() : [];
+  const bulk = um.length ? `<div class="umatch"><span><b>${um.length === 1 ? "1 of these lines matches" : um.length + " of these lines match"} a scanned box exactly.</b> Check a few against the photo strips, then confirm them together.</span><button class="btn sm" data-act="umatch">Confirm ${um.length}</button></div>` : "";
+  const inU = c => R.has.U && S.U.has(c) ? '&nbsp;<span class="chip ok">unloaded</span>' : "";
+  if (S.D) {
+    if (!S.items.length) return "";
+    const D = S.D;
+    const many = S.items.length > 3 && !S.allChecks, shownItems = many ? S.items.slice(0, 3) : S.items;
+    const checks = shownItems.map(it => {
+      const sugg = it.sugg.slice(0, 2), ref = sugg[0], extras = it.value && !D.set.has(it.value) && !(D.byCanon.get(canon(it.value)) || []).length ? [it.value] : [];
+      return `<div class="rv">${it.crop ? `<div class="strip"><img src="${it.crop}" alt="Photo of the printed line"></div>` : ""}
+        <div><div class="muted small">Read as</div><div class="readas">${it.reads.slice(0, 3).map(r => diffMark(r, ref)).join("<br>")}</div></div>
+        <div class="choices">${sugg.map(c => `<button class="btn" data-act="pick" data-id="${it.id}" data-code="${esc(c)}">Confirm&nbsp;<span class="code">${esc(fmtCode(c))}</span>${S.arrived.has(c) ? '&nbsp;<span class="chip mut">already counted</span>' : ""}${inU(c)}</button>`).join("")}
+        ${extras.map(c => `<button class="btn" data-act="extra" data-id="${it.id}" data-code="${esc(c)}">Not expected:&nbsp;<span class="code">${esc(c)}</span>${inU(c)}</button>`).join("")}
+        <button class="btn ghost" data-act="skip" data-id="${it.id}">Skip</button></div></div>`;
+    }).join("");
+    return `<div class="review"><div class="review-head"><b>${S.items.length === 1 ? "1 line" : S.items.length + " lines"} on the driver's list need${S.items.length === 1 ? "s" : ""} your confirmation.</b> They could not be read with certainty and are left out of the report until you confirm them.</div>${bulk}${checks}${many ? `<div class="morechk"><button class="btn sm" data-act="allchecks">Show all ${S.items.length} lines</button></div>` : ""}</div>`;
+  }
+  const unsure = captureRows().rows.filter(r => !r.sure); if (!unsure.length) return "";
+  const lim = S.allChecks ? 40 : 3;
+  const checks = unsure.slice(0, lim).map(({ t }) => `<div class="rv"><div class="strip"><img src="${t.crop}" alt="Photo of the printed line"></div>
+      <div class="choices">${[...new Set(t.reads)].slice(0, 3).map(r => `<button class="btn" data-act="tuse" data-id="${t.id}" data-code="${esc(r)}">Use&nbsp;<span class="code">${esc(r)}</span>${inU(r)}</button>`).join("")}
       <button class="btn ghost" data-act="tdrop" data-id="${t.id}">Not a box number</button></div>
       <div class="typed"><input class="input" id="fix-${t.id}" placeholder="Or type it as printed" aria-label="Type the box number as printed"><button class="btn" data-act="ttype" data-id="${t.id}">Use typed</button></div></div>`).join("");
+  return `<div class="review"><div class="review-head"><b>${unsure.length === 1 ? "1 line" : unsure.length + " lines"} on the driver's list need${unsure.length === 1 ? "s" : ""} checking.</b> Pick the reading that matches the photo strip, or type it. Unchecked lines are left out of the report.</div>${bulk}${checks}${unsure.length > lim ? `<div class="morechk"><button class="btn sm" data-act="allchecks">Show ${S.allChecks ? "more" : "all " + unsure.length + " lines"}</button></div>` : ""}</div>`;
+}
+function reportCard(reading) {
+  const R = reconcile(), title = "Verification report";
+  if (R.has.D && !R.has.E && !R.has.U) return step3capture(reading);
+  if (R.n < 2 && !R.has.U) return `<section class="card pending"><div class="card-head">${repIcon()}<h2>${title}</h2><span class="state">${reading ? "Reading the photos" : "Ready as soon as any two lists are in"}</span></div></section>`;
+  const H = headline(R), keys = R.keys, cnt = k => (R.groups.get(k) || []).length;
+  let sel = keys.includes(S.tab) ? S.tab : keys.find(k => cnt(k)) || keys[0]; S.tab = sel;
+  const two = R.n === 2;
+  const tiles = H ? H.map(([l, v, tone, k]) => {
+    const inner = `<div class="lbl"><i class="dot ${tone}"></i>${l[0]}</div><div class="num">${v}</div><div class="of">${l[1]}</div>`;
+    return two ? `<button class="stat pick" data-act="tab" data-tab="${k}" aria-pressed="${sel === k}">${inner}</button>` : `<div class="stat">${inner}</div>`;
+  }).join("") : `<div class="stat"><div class="lbl">Boxes unloaded</div><div class="num">${S.unl.length}</div><div class="of">scanned at the dock</div></div>
+      <div class="stat"><div class="lbl">Repeat scans</div><div class="num">${S.dup}</div><div class="of">ignored, counted once</div></div>
+      <div class="stat"><div class="lbl">Typed by hand</div><div class="num">${S.unl.filter(x => x.m === "typed").length}</div><div class="of">entered without a barcode</div></div>`;
+  const srcs = [R.has.E ? `<span><b>${S.D.codes.length}</b> expected</span>` : `<span class="off">No expected list</span>`,
+    R.has.D ? `<span><b>${R.Dset.size}</b> on the driver's list</span>` : `<span class="off">Driver's list not scanned</span>`,
+    R.has.U ? `<span><b>${S.unl.length}</b> unloaded</span>` : `<span class="off">Unloading not scanned</span>`].join("");
+  const breakdown = R.n === 3 ? `<div class="bd" role="list">${keys.map(k => { const g = GROUPS[k], v = cnt(k); return `<button class="bdr${sel === k ? " on" : ""}${v ? "" : " zero"}" data-act="tab" data-tab="${k}" aria-pressed="${sel === k}"><i class="dot ${g[2]}"></i><span class="bdl"><b>${g[0]}</b><span>${g[1]}</span></span><span class="bdn">${v}</span></button>`; }).join("")}</div>` : "";
+  const g = GROUPS[sel] || ["", "", "mut"];
+  const outstanding = H ? H[1][1] : 0;
+  return `<section class="card report"><div class="card-head">${repIcon()}<h2>${title}</h2><span class="state">${reading ? "Reading more pages" : H ? (outstanding ? `${plural(outstanding, "box")} ${H[1][0][0].toLowerCase()}` : "Nothing outstanding") : plural(S.unl.length, "box") + " unloaded"}</span></div><div class="card-body">
+    <div class="srcs">${srcs}</div>
+    ${!R.has.U ? `<div class="notice info interim"><span><b>Interim report.</b> Unloading has not been scanned yet, so this compares the expected list with the driver's list. Download it now if you need it; scan the boxes whenever they come off the truck and the report updates to show what was physically received.</span><button class="btn sm" data-act="scanopen">${ICON.scan} Scan unloaded boxes</button></div>` : ""}
+    <div class="stats">${tiles}</div>
+    <div class="actions"><button class="btn primary" data-act="export">${ICON.down} Download report (Excel)</button><button class="btn" data-act="pdf">${ICON.print} Print-ready report (PDF)</button><button class="btn ghost" data-act="copygroup">Copy this list</button></div>
+    ${reviewBlock(R)}
+    ${breakdown}
+    <div class="listhead"><div><b>${S.q ? "Search results" : esc(g[0])}</b><span class="muted small">${S.q ? "across all boxes" : esc(g[1])}</span></div><input class="input" id="q" type="search" placeholder="Search box numbers" value="${esc(S.q)}" aria-label="Search box numbers"></div>
+    <div class="table" id="list">${reportList(R, sel)}</div>
+  </div></section>`;
+}
+function reportList(R, sel) {
+  const q = cleanCode(S.q), byCode = new Map(R.rows.map(r => [r.c, r]));
+  const rows = q ? R.rows.filter(r => r.c.includes(q)) : (R.groups.get(sel) || []).map(c => byCode.get(c));
+  const cols = [R.has.E && "Expected", R.has.D && "Driver", R.has.U && "Unloaded"].filter(Boolean), marks = cols.length >= 2 && !q;
+  const head = `<div class="thead"><span>Box number</span>${marks ? `<span class="mks">${cols.map(c => `<span>${c}</span>`).join("")}</span>` : `<span>${q ? "Result" : R.has.U && R.n === 1 ? "Scanned at" : ""}</span>`}</div>`;
+  if (!rows.length) return head + `<div class="empty">${q ? "No box number contains " + esc(S.q) + "." : "No boxes in this group."}</div>`;
+  const mk = v => `<span class="${v ? "y" : "n"}" aria-label="${v ? "yes" : "no"}">${v ? ICON.yes : "&ndash;"}</span>`;
+  const when = new Map(S.unl.map(x => [x.c, x.t]));
+  return head + rows.slice(0, S.limit).map(r => `<div class="tr"><span class="code">${esc(fmtCode(r.c))}</span>${q ? `<span class="chip ${GROUPS[r.key] ? GROUPS[r.key][2] : "mut"}">${GROUPS[r.key] ? GROUPS[r.key][0] : ""}</span>`
+    : marks ? `<span class="mks">${[R.has.E && mk(r.e), R.has.D && mk(r.d), R.has.U && mk(r.u)].filter(Boolean).join("")}</span>` : `<span class="muted small">${when.has(r.c) ? esc(fmtTime(when.get(r.c))) : ""}</span>`}</div>`).join("")
+    + (rows.length > S.limit ? `<div class="empty"><button class="btn sm" data-act="more">Show ${Math.min(400, rows.length - S.limit)} more</button></div>` : "");
+}
+function step3capture(reading) {
+  const scanned = S.pages.some(p => p.status === "done") || S.tokens.length;
+  if (!scanned) return `<section class="card pending"><div class="card-head">${repIcon()}<h2>Driver's list, soft copy</h2><span class="state">${reading ? "Reading the photos" : "Scan the driver's list to build it"}</span></div></section>`;
+  const { groups, L, rows } = captureRows(), sure = rows.filter(r => r.sure).length, unsure = rows.filter(r => !r.sure);
   const q = cleanCode(S.q), shown = q ? rows.filter(r => r.show.includes(q)) : rows;
-  return `<section class="card"><div class="card-head">${stepNo(3, !reading && !unsure.length ? "done" : "now")}<h2>Driver's list, soft copy</h2><span class="state">${reading ? "Reading more pages" : plural(rows.length, "box number")}</span></div><div class="card-body">
+  return `<section class="card"><div class="card-head">${repIcon()}<h2>Driver's list, soft copy</h2><span class="state">${reading ? "Reading more pages" : plural(rows.length, "box number")}</span></div><div class="card-body">
     <div class="stats">
       <div class="stat"><div class="lbl">Box numbers read</div><div class="num">${rows.length}</div><div class="of">from ${plural(S.pages.filter(p => p.status === "done").length, "page")}</div></div>
       <div class="stat"><div class="lbl"><i class="dot ok"></i>Read clearly</div><div class="num">${sure}</div><div class="of">two reads agreed</div></div>
       <div class="stat"><div class="lbl"><i class="dot warn"></i>To check</div><div class="num">${unsure.length}</div><div class="of">reads disagreed</div></div>
     </div>
     <div class="actions"><button class="btn primary" data-act="exportcap">${ICON.down} Download driver's list (Excel)</button><button class="btn ghost" data-act="copycap">Copy list</button></div>
-    <div class="notice info">There is no expected list to check these against, so a number can still be a character off. When the expected list is ready, upload it in step 1 and this scan is compared automatically.</div>
+    <div class="notice info">There is no expected list to check these against, so a number can still be a character off. Upload the expected list in step 1, or scan the unloaded boxes in step 3, and this list is compared automatically.</div>
     ${groups.length > 1 ? `<div class="field"><label for="grp">Which numbers are the box numbers?</label><select id="grp" data-change="group">${groups.slice(0, 6).map(g => `<option value="${g.len}" ${g.len === L ? "selected" : ""}>${g.len} characters long (${g.n} found)</option>`).join("")}</select></div>` : ""}
-    ${unsure.length ? `<div class="review"><div class="review-head"><b>${unsure.length === 1 ? "1 line needs" : unsure.length + " lines need"} checking.</b> Pick the reading that matches the photo strip, or type it.</div>${checks}</div>` : ""}
+    ${reviewBlock({ has: { U: false } })}
     <input class="input" id="q" type="search" placeholder="Search box numbers" value="${esc(S.q)}" aria-label="Search box numbers">
     <div class="table" id="list"><div class="thead"><span>Box number</span><span>Reading</span></div>${shown.length ? shown.slice(0, S.limit).map(r => `<div class="tr"><span class="code">${esc(r.show)}</span><span class="chip ${r.sure ? "ok" : "warn"}">${r.sure ? "Clear" : "To check"}</span></div>`).join("") + (shown.length > S.limit ? `<div class="empty"><button class="btn sm" data-act="more">Show ${Math.min(400, shown.length - S.limit)} more</button></div>` : "") : `<div class="empty">${q ? "No box number contains " + esc(S.q) + "." : "No box numbers were found in the photos. Move closer, hold the page flat and retake."}</div>`}</div>
   </div></section>`;
 }
-function listRows(D, missing) {
-  const q = cleanCode(S.q);
-  let rows = S.tab === "missing" ? missing.map(c => [c, "bad"]) : S.tab === "arrived" ? [...S.arrived].map(c => [c, "ok"]) : [...S.extra].map(c => [c, "warn"]);
-  if (q) rows = [...D.codes.map(c => [c, S.arrived.has(c) ? "ok" : "bad"]), ...[...S.extra].map(c => [c, "warn"])].filter(([c]) => c.includes(q));
-  const word = { ok: "Arrived", bad: "Not arrived", warn: "Not expected" };
-  const head = `<div class="thead"><span>Box number</span><span>${q ? "Status across all lists" : "Status"}</span></div>`;
-  if (!rows.length) return head + `<div class="empty">${q ? "No box number contains " + esc(S.q) + "." : S.tab === "missing" ? "Nothing outstanding. Every expected box is on the driver's list." : S.tab === "arrived" ? "No expected boxes found on the driver's list yet." : "Every box number on the driver's list is in your Excel."}</div>`;
-  return head + rows.slice(0, S.limit).map(([c, st]) => `<div class="tr"><span class="code">${esc(fmtCode(c))}</span><span class="chip ${st}">${word[st]}</span></div>`).join("") + (rows.length > S.limit ? `<div class="empty"><button class="btn sm" data-act="more">Show ${Math.min(400, rows.length - S.limit)} more</button></div>` : "");
-}
 
 /* ---------- export ---------- */
 const stampNow = () => { const d = new Date(), p = n => String(n).padStart(2, "0"); return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`; };
-function reportData() {
-  const D = S.D, missing = D.codes.filter(c => !S.arrived.has(c));
-  return { D, missing, arrived: [...S.arrived], extra: [...S.extra], when: new Date(), pages: S.pages.filter(p => p.status === "done").length, stamp: stampNow() };
-}
 async function saveFile(filename, blob, okMsg) {
   if (downloads) {
     try { await downloads.save({ filename, data: blob }); toast(okMsg); }
@@ -1013,16 +1444,32 @@ async function saveFile(filename, blob, okMsg) {
   if (!STANDALONE) return toast("Saving files is not available in this view. Use the copy button instead.");
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); toast(okMsg);
 }
-function sheetAdder(wb) { return (name, rows, widths) => { const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = (widths || [30, 26]).map(w => ({ wch: w })); XLSX.utils.book_append_sheet(wb, ws, name); }; }
+function sheetAdder(wb) {
+  const used = new Set();
+  return (name, rows, widths) => {
+    let n = name.replace(/[:\\/?*\[\]]/g, " ").slice(0, 31).trim(), i = 2; while (used.has(n)) n = name.slice(0, 28) + " " + i++; used.add(n);
+    const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = (widths || [30, 26]).map(w => ({ wch: w })); XLSX.utils.book_append_sheet(wb, ws, n);
+  };
+}
+const wbBlob = wb => new Blob([XLSX.write(wb, { type: "array", bookType: "xlsx" })], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+const yn = v => v ? "Yes" : "No";
+function sourcesText(R) {
+  return [["Report status", R.has.U ? "Final: includes the unloading scan" : "Interim: unloading not scanned yet"], ["Expected delivery list", R.has.E ? `${S.exp.file} (${S.D.codes.length} boxes)` : "Not provided"],
+    ["Driver's printed list", R.has.D ? `${S.pages.filter(p => p.status === "done").length || "Saved"} page(s), ${R.Dset.size} box numbers` : "Not scanned"],
+    ["Unloaded boxes", R.has.U ? `${S.unl.length} scanned${S.dup ? `, ${S.dup} repeat scans ignored` : ""}` : "Not scanned"]];
+}
 function buildWorkbook() {
-  const R = reportData(), wb = XLSX.utils.book_new(), add = sheetAdder(wb);
-  add("Summary", [["Blubirch Delivery Verification"], [], ["Expected delivery list", S.exp.file], ["Report time", R.when.toLocaleString()], ["Pages of driver's list scanned", R.pages], [],
-    ["Boxes expected", R.D.codes.length], ["Arrived", R.arrived.length], ["Not arrived", R.missing.length], ["Not expected (on driver's list only)", R.extra.length], ["Lines left unconfirmed", S.items.length]], [38, 30]);
-  add("All boxes", [["Box number", "Status"], ...R.D.codes.map(c => [fmtCode(c), S.arrived.has(c) ? "Arrived" : "Not arrived"]), ...R.extra.map(c => [c, "Not expected"])]);
-  add("Not arrived", [["Box number"], ...R.missing.map(c => [fmtCode(c)])]);
-  add("Arrived", [["Box number"], ...R.arrived.map(c => [fmtCode(c)])]);
-  add("Not expected", [["Box number"], ...R.extra.map(c => [c])]);
-  return { wb, R };
+  const R = reconcile(), H = headline(R), wb = XLSX.utils.book_new(), add = sheetAdder(wb), when = new Date();
+  const sum = [["Blubirch Delivery Verification"], [], ...sourcesText(R), ["Report time", when.toLocaleString()], []];
+  if (H) { sum.push(["Summary", "Boxes"]); H.forEach(([l, v]) => sum.push([`${l[0]} (${l[1]})`, v])); sum.push([]); }
+  sum.push(["Group", "Boxes", "Meaning"]); R.keys.forEach(k => sum.push([GROUPS[k][0], (R.groups.get(k) || []).length, GROUPS[k][1]]));
+  if (R.dr.pending) sum.push([], ["Driver's list lines left unconfirmed", R.dr.pending, "Not included above"]);
+  add("Summary", sum, [44, 12, 64]);
+  const cols = [R.has.E && "Expected", R.has.D && "On driver's list", R.has.U && "Unloaded"].filter(Boolean);
+  add("All boxes", [["Box number", ...cols, "Result"], ...R.rows.filter(r => GROUPS[r.key]).map(r => [fmtCode(r.c), ...[R.has.E && yn(r.e), R.has.D && yn(r.d), R.has.U && yn(r.u)].filter(Boolean), GROUPS[r.key][0]])], [30, ...cols.map(() => 16), 32]);
+  for (const k of R.keys) { const c = R.groups.get(k) || []; if (c.length) add(GROUPS[k][0], [["Box number"], ...c.map(x => [fmtCode(x)])]); }
+  if (R.has.U) add("Unloading scans", [["Box number", "Scanned at", "Method"], ...S.unl.map(x => [fmtCode(x.c), new Date(x.t).toLocaleString(), { scanner: "Scanner", camera: "Camera", typed: "Typed", photo: "Photo", import: "Imported" }[x.m] || x.m])], [30, 24, 12]);
+  return { wb, R, stamp: stampNow() };
 }
 function buildCaptureWorkbook() {
   const { rows } = captureRows(), wb = XLSX.utils.book_new(), add = sheetAdder(wb);
@@ -1030,40 +1477,79 @@ function buildCaptureWorkbook() {
   add("Summary", [["Blubirch Delivery Verification"], ["Driver's list, soft copy (no expected list at scan time)"], [], ["Scan time", new Date().toLocaleString()], ["Pages scanned", S.pages.filter(p => p.status === "done").length], ["Box numbers read", rows.length], ["Read clearly", rows.filter(r => r.sure).length], ["To check", rows.filter(r => !r.sure).length]], [44, 30]);
   return wb;
 }
-const wbBlob = wb => new Blob([XLSX.write(wb, { type: "array", bookType: "xlsx" })], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-async function exportExcel() { const { wb, R } = buildWorkbook(); await saveFile(`Delivery verification ${R.stamp}.xlsx`, wbBlob(wb), "Excel results saved."); }
+function buildScansWorkbook() {
+  const wb = XLSX.utils.book_new(), add = sheetAdder(wb);
+  add("Unloaded boxes", [["Box number", "Scanned at", "Method", "Status"], ...S.unl.map(x => [x.c, new Date(x.t).toLocaleString(), x.m, scanStatus(x.c)[1]])], [30, 24, 12, 22]);
+  return wb;
+}
+async function exportExcel() { const { wb, stamp } = buildWorkbook(); await saveFile(`Delivery verification ${stamp}.xlsx`, wbBlob(wb), "Excel report saved."); }
 async function exportCapture() { await saveFile(`Driver list ${stampNow()}.xlsx`, wbBlob(buildCaptureWorkbook()), "Driver's list saved as Excel."); }
+async function exportScans() { if (!S.unl.length) return toast("No boxes scanned yet."); await saveFile(`Unloaded boxes ${stampNow()}.xlsx`, wbBlob(buildScansWorkbook()), "Scan list saved as Excel."); }
+const TONE_RGB = { bad: [179, 38, 30], warn: [154, 91, 6], mut: [92, 93, 120], ok: [0, 127, 9] };
 function buildPdf() {
-  const R = reportData(), doc = new jspdf.jsPDF({ unit: "pt", format: "a4" }), W = doc.internal.pageSize.getWidth(), M = 40;
+  const R = reconcile(), H = headline(R), doc = new jspdf.jsPDF({ unit: "pt", format: "a4" }), W = doc.internal.pageSize.getWidth(), M = 40;
   doc.setFillColor(0, 60, 158); doc.rect(0, 0, W, 6, "F");
   doc.setFont("helvetica", "bold"); doc.setFontSize(16); doc.setTextColor(0, 60, 158); doc.text("Blubirch Delivery Verification", M, 44);
-  doc.setFont("helvetica", "normal"); doc.setFontSize(10); doc.setTextColor(90, 98, 110);
-  doc.text(`Expected delivery list: ${S.exp.file}`, M, 62); doc.text(`Report time: ${R.when.toLocaleString()}    Pages scanned: ${R.pages}`, M, 76);
-  doc.autoTable({ startY: 92, margin: { left: M, right: M }, theme: "grid", styles: { fontSize: 10, cellPadding: 6, halign: "center" }, headStyles: { fillColor: [0, 60, 158] },
-    head: [["Expected", "Arrived", "Not arrived", "Not expected", "Unconfirmed lines"]], body: [[R.D.codes.length, R.arrived.length, R.missing.length, R.extra.length, S.items.length]] });
-  const maxLen = Math.max(...R.D.codes.map(c => fmtCode(c).length), 8), perRow = maxLen > 22 ? 2 : maxLen > 15 ? 3 : 4;
-  const section = (title, codes, color) => {
-    const body = []; for (let i = 0; i < codes.length; i += perRow) body.push(Array.from({ length: perRow }, (_, k) => codes[i + k] || ""));
-    doc.autoTable({ startY: doc.lastAutoTable.finalY + 22, margin: { left: M, right: M, bottom: 44 }, theme: "grid", showHead: "everyPage",
-      styles: { font: "courier", fontSize: 9.5, cellPadding: 4, textColor: [21, 24, 29] }, headStyles: { font: "helvetica", fontStyle: "bold", fillColor: color, textColor: 255, halign: "left" },
-      head: [[{ content: `${title} (${codes.length})`, colSpan: perRow }]], body: body.length ? body : [[{ content: "None", colSpan: perRow, styles: { font: "helvetica", textColor: [90, 98, 110] } }]] });
-  };
-  section("Not arrived: expected but not on the driver's list", R.missing.map(fmtCode), [179, 38, 30]);
-  section("Not expected: on the driver's list but not in the Excel", R.extra, [154, 91, 6]);
-  section("Arrived", R.arrived.map(fmtCode), [10, 122, 20]);
-  const n = doc.getNumberOfPages(), H = doc.internal.pageSize.getHeight();
-  for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(120, 128, 140); doc.text(`Page ${i} of ${n}`, W - M, H - 20, { align: "right" }); doc.text("Receiver signature: ______________________", M, H - 20); }
-  return { doc, R };
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9.5); doc.setTextColor(90, 98, 110);
+  let y = 62; for (const [k, v] of [...sourcesText(R), ["Report time", new Date().toLocaleString()]]) { doc.text(`${k}: ${v}`, M, y); y += 13; }
+  if (H) doc.autoTable({ startY: y + 6, margin: { left: M, right: M }, theme: "grid", styles: { fontSize: 10, cellPadding: 6, halign: "center" }, headStyles: { fillColor: [0, 60, 158] },
+    head: [H.map(h => h[0][0])], body: [H.map(h => h[1])] });
+  doc.autoTable({ startY: (H ? doc.lastAutoTable.finalY : y) + 14, margin: { left: M, right: M }, theme: "grid", styles: { fontSize: 9.5, cellPadding: 5 }, headStyles: { fillColor: [26, 27, 53] },
+    columnStyles: { 1: { halign: "right", cellWidth: 50 } }, head: [["Group", "Boxes", "Meaning"]], body: R.keys.map(k => [GROUPS[k][0], (R.groups.get(k) || []).length, GROUPS[k][1]]) });
+  if (R.dr.pending) { doc.setFontSize(9); doc.setTextColor(154, 91, 6); doc.text(`${R.dr.pending} line(s) on the driver's list were left unconfirmed and are not included.`, M, doc.lastAutoTable.finalY + 14); }
+  const all = R.rows.map(r => fmtCode(r.c)), maxLen = Math.max(8, ...all.map(c => c.length)), perRow = maxLen > 22 ? 2 : maxLen > 15 ? 3 : 4;
+  for (const k of R.keys) {
+    const codes = (R.groups.get(k) || []).map(fmtCode); if (!codes.length) continue;
+    const body = []; for (let i = 0; i < codes.length; i += perRow) body.push(Array.from({ length: perRow }, (_, j) => codes[i + j] || ""));
+    doc.autoTable({ startY: doc.lastAutoTable.finalY + 26, margin: { left: M, right: M, bottom: 44 }, theme: "grid", showHead: "everyPage",
+      styles: { font: "courier", fontSize: 9.5, cellPadding: 4, textColor: [21, 24, 29] }, headStyles: { font: "helvetica", fontStyle: "bold", fillColor: TONE_RGB[GROUPS[k][2]], textColor: 255, halign: "left" },
+      head: [[{ content: `${GROUPS[k][0]} (${codes.length}): ${GROUPS[k][1].toLowerCase()}`, colSpan: perRow }]], body });
+  }
+  const n = doc.getNumberOfPages(), Hh = doc.internal.pageSize.getHeight();
+  for (let i = 1; i <= n; i++) { doc.setPage(i); doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(120, 128, 140); doc.text(`Page ${i} of ${n}`, W - M, Hh - 20, { align: "right" }); doc.text("Receiver signature: ______________________", M, Hh - 20); }
+  return { doc, stamp: stampNow() };
 }
 async function exportPdf() {
-  if (!window.jspdf) return toast("The PDF report is not available in this view. Download the Excel results instead.");
-  const { doc, R } = buildPdf();
-  await saveFile(`Delivery verification ${R.stamp}.pdf`, doc.output("blob"), "PDF report saved. Open it to print.");
+  if (!window.jspdf) return toast("The PDF report is not available in this view. Download the Excel report instead.");
+  const { doc, stamp } = buildPdf();
+  await saveFile(`Delivery verification ${stamp}.pdf`, doc.output("blob"), "PDF report saved. Open it to print.");
 }
 async function copyText(text, okMsg) {
   try { await navigator.clipboard.writeText(text); toast(okMsg); }
   catch (e) { showModal(`<h2>Copy the list</h2><div class="field"><label for="copy-fallback">Select all and copy</label><textarea id="copy-fallback" readonly>${esc(text)}</textarea></div>`, []); const t = $("#copy-fallback"); if (t) { t.focus(); t.select(); } }
 }
+
+
+/* ---------- help ---------- */
+function helpHtml() {
+  const step = (n, t, body) => `<li class="hstep"><span class="hnum">${n}</span><div><b>${t}</b>${body}</div></li>`;
+  const grp = k => `<li><i class="dot ${GROUPS[k][2]}"></i><b>${GROUPS[k][0]}</b><span>${GROUPS[k][1]}.</span></li>`;
+  return `<div class="help">
+    <h2>How to use</h2>
+    <p class="muted">Three lists, one report. You can add them in any order and come back to it later. Everything is saved on this device as you go.</p>
+    <ol class="hsteps">
+      ${step(1, "Upload the expected list", `<p>The Excel file of boxes the office expects on this truck, one box number per row. The app finds the right column by itself.</p><p class="muted">Not received yet? Tap <i>No list yet? Continue without it</i> and add it later.</p>`)}
+      ${step(2, "Photograph the driver's list", `<p>Take one photo of each page the driver is carrying. Keep the page flat, in good light, with every number inside the photo. Add more pages at any time.</p><p class="muted">Without the expected list, this becomes a soft copy of the driver's list that you can download as Excel.</p>`)}
+      ${step(3, "Scan the boxes as they unload", `<p>Optional, and can be done later. Tap <i>Start scanning</i>, then scan each box label.</p>
+        <ul class="hbul"><li><b>Handheld scanner:</b> just scan. Nothing else to press.</li><li><b>Phone camera:</b> tap <i>Use camera</i> and hold the label inside the frame.</li><li><b>Damaged label:</b> tap <i>Type a number</i>, type it, tap <i>Add</i>.</li></ul>
+        <div class="hcolors"><span><span class="chip ok">Green</span>Expected box</span><span><span class="chip warn">Amber</span>Not expected: saved and flagged</span><span><span class="chip bad">Red</span>Already scanned: not counted twice</span></div>
+        <p class="muted">Scanned the wrong box? Tap <i>Undo last scan</i>, or the cross next to it. Tap <i>Done</i> when finished.</p>`)}
+      ${step(4, "Read and download the report", `<p>The report appears as soon as any two lists are in, and updates as you add more. Tap a group to see its boxes. <i>Download report (Excel)</i> or <i>Print-ready report (PDF)</i> to share or print.</p>`)}
+    </ol>
+    <h3>If some lines need confirming</h3>
+    <p>A line on the driver's photo that could not be read with certainty is shown with a strip of the photo. Compare it with the choices and tap the one that matches. These lines are left out of the report until someone confirms them.</p>
+    <h3>What the report groups mean</h3>
+    <ul class="hgroups">${["111", "110", "100", "001", "011", "101", "010"].map(grp).join("")}</ul>
+    <h3>Good to know</h3>
+    <ul class="hbul">
+      <li><b>Next truck:</b> tap <i>New verification</i>. The current one stays in <i>Recent scans</i>.</li>
+      <li><b>Saved on this device only:</b> nothing is uploaded. Download the Excel report for anything you need to keep or share.</li>
+      <li><b>Long box numbers in Excel:</b> keep the column formatted as Text, or Excel rounds the last digits. The app warns you if it spots this.</li>
+      <li><b>Photos not reading well:</b> move closer, avoid shadows and glare, and hold the page flat.</li>
+    </ul>
+  </div>`;
+}
+function showHelp() { showModal(helpHtml(), []); const c = $(".modal .card"); c.classList.add("wide-modal", "help-modal"); c.scrollTop = 0; }
 
 /* ---------- small UI pieces ---------- */
 let toastT = null;
@@ -1074,7 +1560,7 @@ function showModal(html, buttons, locked) {
   d.innerHTML = `<div class="card" role="dialog" aria-modal="true">${html}<div class="actions" style="justify-content:flex-end">${locked ? "" : `<button class="btn" data-act="closemodal">${buttons.length ? "Cancel" : "Close"}</button>`}${buttons.map(b => `<button class="btn ${b.cls || ""}" data-act="${b.act}">${esc(b.label)}</button>`).join("")}</div></div>`;
   document.body.appendChild(d);
 }
-function closeModal() { const c = $(".modal"); if (c) c.remove(); S.histOpen = false; }
+function closeModal() { const c = $(".modal"); if (c) c.remove(); S.histOpen = false; if (SC.open) focusBc(); }
 function settle(id, fn) { const i = S.items.findIndex(x => x.id === id); if (i < 0) return; fn(S.items[i]); S.items.splice(i, 1); persist(); render(); }
 function settleTok(id, fn) { const t = S.tokens.find(x => x.id === id); if (!t) return; fn(t); persist(); render(); }
 
@@ -1093,7 +1579,7 @@ const ACT = {
   camera() { if (needList("pick-camera")) return; $("#pick-camera").click(); },
   photos() { if (needList("pick-photos")) return; $("#pick-photos").click(); },
   scananyway() { closeModal(); S.mode = "capture"; render(); $("#" + ACT._picker).click(); },
-  tab(el) { S.tab = el.dataset.tab; S.limit = 200; render(); },
+  tab(el) { S.tab = el.dataset.tab; S.q = ""; S.limit = 200; render(); },
   more() { S.limit += 400; render(); },
   pick(el) { settle(el.dataset.id, () => S.arrived.add(el.dataset.code)); },
   extra(el) { settle(el.dataset.id, () => S.extra.add(el.dataset.code)); },
@@ -1101,32 +1587,73 @@ const ACT = {
   tuse(el) { settleTok(el.dataset.id, t => { t.reads = [el.dataset.code, el.dataset.code]; t.value = el.dataset.code; t.sure = true; t.fixed = true; }); },
   tdrop(el) { settleTok(el.dataset.id, t => { t.removed = true; }); },
   ttype(el) { const v = cleanCode($("#fix-" + el.dataset.id).value); if (v.length < 4) return toast("Type the box number first."); settleTok(el.dataset.id, t => { t.reads = [v, v]; t.value = v; t.sure = true; t.fixed = true; }); },
+  umatch() {
+    const um = uMatches(); if (!um.length) return;
+    for (const m of um) {
+      if (m.it) { const i = S.items.indexOf(m.it); if (i >= 0) S.items.splice(i, 1); (S.D.set.has(m.c) ? S.arrived : S.extra).add(m.c); }
+      else { m.t.reads = [m.c, m.c]; m.t.value = m.c; m.t.sure = true; m.t.fixed = true; }
+    }
+    persist(); render(); toast(`${plural(um.length, "line")} confirmed from the unloading scan.`);
+  },
   export() { exportExcel(); },
   exportcap() { exportCapture(); },
+  exportscans() { exportScans(); },
   copycap() { const r = captureRows().rows; if (!r.length) return toast("Nothing to copy yet."); copyText(r.map(x => x.show).join("\n"), plural(r.length, "box number") + " copied."); },
+  copygroup() { const R = reconcile(), c = R.groups.get(S.tab) || []; if (!c.length) return toast("This list is empty."); copyText(c.map(fmtCode).join("\n"), `${plural(c.length, "box number")} copied (${GROUPS[S.tab][0]}).`); },
   pdf() { exportPdf(); },
-  copymissing() { const m = S.D.codes.filter(c => !S.arrived.has(c)); if (!m.length) return toast("Nothing to copy. Every expected box has arrived."); copyText(m.map(fmtCode).join("\n"), plural(m.length, "box number") + " copied."); },
+  allchecks() { S.allChecks = true; render(); },
+  scanopen() { scanOpen(); },
+  scanclose() { scanClose(); },
+  scanundo() { const x = S.unl[S.unl.length - 1]; if (!x) return focusBc(); removeUnloaded(x.c); scanFeedback("mut", x.c, "Scan removed", "This box is no longer counted as unloaded."); focusBc(); },
+  scanrm(el) { removeUnloaded(el.dataset.code); scanFeedback("mut", el.dataset.code, "Scan removed", "This box is no longer counted as unloaded."); focusBc(); },
+  scantype(el) { SC.typed = !SC.typed; const i = $("#bc"); i.setAttribute("inputmode", SC.typed ? "text" : "none"); i.placeholder = SC.typed ? "Type the box number, then Add" : "Scan a barcode"; el.setAttribute("aria-pressed", SC.typed); i.blur(); focusBc(); },
+  camon() { camOn(); },
+  camoff() { camOff(); focusBc(); },
+  bcphoto() { $("#pick-bcphoto").click(); },
+  pickscans() { $("#pick-scans").click(); },
   askreset() { showModal("<h2>Start a new verification?</h2><p class=\"muted\">The current one stays in Recent scans, so you can reopen it later.</p>", [{ act: "reset", label: "Start new verification", cls: "primary" }]); },
-  async reset() { closeModal(); clearTimeout(saveT); if (S.D || S.tokens.length) await Store.put(snapshot()); blank(); lsSet("blubirch.last.device", null); await loadHistory(); render(); window.scrollTo(0, 0); },
-  async hopen(el) { closeModal(); clearTimeout(saveT); if (S.D || S.tokens.length) await Store.put(snapshot()); const j = (await Store.all()).find(s => s.id === el.dataset.id); if (!j) return; openSession(j); await loadHistory(); render(); window.scrollTo(0, 0); },
+  async reset() { closeModal(); if (SC.open) scanClose(); await saveNow(); blank(); lsSet("blubirch.last.device", null); await loadHistory(); render(); window.scrollTo(0, 0); },
+  async hopen(el) { closeModal(); if (SC.open) scanClose(); await saveNow(); const j = (await Store.all()).find(s => s.id === el.dataset.id); if (!j) return; openSession(j); await loadHistory(); render(); window.scrollTo(0, 0); },
   hdel(el) { ACT._del = el.dataset.id; showModal("<h2>Delete this scan?</h2><p class=\"muted\">It is removed from this device and cannot be recovered.</p>", [{ act: "hdel2", label: "Delete", cls: "danger" }]); },
   async hdel2() { closeModal(); await Store.del(ACT._del); await loadHistory(); showHistory(); },
   recent() { showHistory(); },
+  help() { showHelp(); },
   theme() { const t = isDark() ? "light" : "dark"; document.documentElement.dataset.theme = t; try { localStorage.setItem("blubirch.theme", t); } catch (e) {} paintTheme(); },
   closemodal() { closeModal(); }
 };
 document.addEventListener("click", ev => { const el = ev.target.closest("[data-act]"); if (!el || el.disabled) return; const f = ACT[el.dataset.act]; if (f) f(el, ev); });
+document.addEventListener("submit", ev => { if (ev.target.id === "sc-form") { ev.preventDefault(); commitBc(); } });
+/* Handheld scanners type the code and usually press Enter or Tab. Some send nothing at the end: a burst of very fast keystrokes is committed after a short pause. */
+document.addEventListener("keydown", ev => {
+  if (ev.target.id === "bc" && (ev.key === "Enter" || ev.key === "Tab")) { ev.preventDefault(); commitBc(); return; }
+  if (ev.key === "Escape" && SC.open && !$(".modal")) scanClose();
+});
+document.addEventListener("input", ev => {
+  const t = ev.target;
+  if (t.id === "bc") {
+    const now = performance.now(); SC.keys.push(now); if (SC.keys.length > 40) SC.keys.shift();
+    clearTimeout(SC.autoT);
+    const k = SC.keys, fast = k.length >= 6 && k.slice(1).every((v, i) => v - k[i] < 45);
+    if (fast && cleanCode(t.value).length >= 6 && !SC.typed) SC.autoT = setTimeout(commitBc, 200);
+    return;
+  }
+  if (t.id !== "q") return;
+  S.q = t.value; S.limit = 200; const pos = t.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(pos, pos); }
+});
+document.addEventListener("pointerup", ev => { if (SC.open && !ev.target.closest("input,select,textarea,button,a,video,.modal")) focusBc(); });
 document.addEventListener("change", ev => {
   const t = ev.target;
   if (t.id === "pick-sheet" && t.files[0]) { loadSheet(t.files[0]); t.value = ""; }
   else if ((t.id === "pick-photos" || t.id === "pick-camera") && t.files.length) { addPages([...t.files]); t.value = ""; }
+  else if (t.id === "pick-scans" && t.files[0]) { importScans(t.files[0]); t.value = ""; }
+  else if (t.id === "pick-bcphoto" && t.files[0]) { decodePhoto(t.files[0]); t.value = ""; }
   else if (t.dataset.change === "pickcol") setExpected({ ...S.exp, pick: +t.value });
   else if (t.dataset.change === "group") { S.group = +t.value; persist(); render(); }
 });
-document.addEventListener("input", ev => { if (ev.target.id !== "q") return; S.q = ev.target.value; S.limit = 200; if (S.D) $("#list").innerHTML = listRows(S.D, S.D.codes.filter(c => !S.arrived.has(c))); else { const pos = ev.target.selectionStart; render(); const q = $("#q"); if (q) { q.focus(); q.setSelectionRange(pos, pos); } } });
 document.addEventListener("dragover", ev => { const d = $("#drop"); if (d) { ev.preventDefault(); d.classList.add("over"); } });
 document.addEventListener("dragleave", () => { const d = $("#drop"); if (d) d.classList.remove("over"); });
 document.addEventListener("drop", ev => { const d = $("#drop"); if (!d) return; ev.preventDefault(); d.classList.remove("over"); const f = ev.dataTransfer.files[0]; if (f) loadSheet(f); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveNow(); });
 const SUN = "M12 4V2M12 22v-2M4 12H2M22 12h-2M6.3 6.3L4.9 4.9M19.1 19.1l-1.4-1.4M6.3 17.7l-1.4 1.4M19.1 4.9l-1.4 1.4M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z", MOON = "M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z";
 function isDark() { const t = document.documentElement.dataset.theme; return t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; }
 function paintTheme() { const d = isDark(); $("#theme-icon").setAttribute("d", d ? SUN : MOON); $("#theme").setAttribute("aria-label", d ? "Switch to light mode" : "Switch to dark mode"); }
@@ -1142,6 +1669,7 @@ render();
   try { const use = window.claude && window.claude.use; if (use) downloads = await use("downloads"); } catch (e) {}
 })();
 </script>
+
 
 </body>
 </html>
