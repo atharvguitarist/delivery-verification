@@ -561,8 +561,12 @@ function hydrate(codes, labels) {
   return { codes, set: new Set(codes), labels: labels || {}, byCanon, keyed, profile: makeProfile(codes), twins: [...byCanon.values()].filter(v => v.length > 1).length };
 }
 function fmtCode(c) {
-  const lab = S.D && S.D.labels[c]; if (lab) return lab;
-  return /^\d+$/.test(c) && c.length >= 12 && c.length % 4 === 0 ? c.replace(/(.{4})(?=.)/g, "$1 ") : c;
+  /* Codes are shown exactly as they are matched: one unbroken string.
+     This used to return the raw text from the source sheet, keeping any spaces
+     or hyphens it contained, and it also grouped long all-digit codes into
+     blocks of four. Both put gaps inside a code such as AMSOKQOW10932103 in
+     the on-screen list, the Excel sheet and the PDF. */
+  return cleanCode(c);
 }
 function diffMark(read, ref) {
   if (!ref || read.length !== ref.length) return esc(read);
